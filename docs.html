@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 文档 - AnPin AI</title>
+    <style>
+        :root{--bg:#fafafa;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--accent:#8b5cf6;--card:#fff;--nav-bg:rgba(255,255,255,.72)}
+        *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}a{text-decoration:none;color:inherit}
+        body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+        .page{min-height:100vh;display:flex;flex-direction:column}
+
+        .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;position:relative;z-index:10}
+        .nav-logo{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:10px;letter-spacing:-.5px}
+        .logo-box{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#1e293b,#0f172a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700}
+        .nav-links{display:flex;gap:20px;align-items:center;background:var(--nav-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:8px 26px;border-radius:40px;border:1px solid rgba(0,0,0,.04);box-shadow:0 2px 12px rgba(0,0,0,.03);font-size:.86rem;font-weight:500}
+        .nav-links a{color:var(--muted);transition:color .2s}
+        .nav-links a:hover,.nav-links a.active{color:var(--accent)}
+        .btn-console{background:#18181b;color:#fff;padding:8px 20px;border-radius:30px;font-size:.86rem;font-weight:600;transition:all .25s}
+        .btn-console:hover{background:#000;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+
+        .layout{max-width:1100px;margin:0 auto;padding:0 24px;flex:1;display:flex;gap:40px}
+        .sidebar{width:210px;flex-shrink:0;padding:40px 0;position:sticky;top:0;height:fit-content}
+        .sidebar h4{font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:1.5px;margin-bottom:10px}
+        .sidebar ul{list-style:none;margin-bottom:22px}
+        .sidebar li a{display:block;padding:6px 12px;border-radius:8px;font-size:.86rem;color:var(--muted);transition:all .15s;margin-bottom:1px;border-left:2px solid transparent}
+        .sidebar li a:hover{color:var(--text);background:#f3f4f6}
+        .sidebar li a.active{color:var(--accent);border-left-color:var(--accent);background:rgba(139,92,246,.04);font-weight:500}
+        .content{flex:1;padding:40px 0 60px;min-width:0}
+        .content h1{font-size:2rem;font-weight:800;letter-spacing:-1px;margin-bottom:6px}
+        .content .subtitle{color:var(--muted);font-size:.92rem;margin-bottom:36px}
+        .content h2{font-size:1.25rem;font-weight:700;margin:40px 0 14px;padding-top:24px;border-top:1px solid var(--border)}
+        .content h2:first-of-type{border-top:none;margin-top:0;padding-top:0}
+        .content h3{font-size:1rem;font-weight:600;margin:22px 0 10px;color:#374151}
+        .content p{font-size:.9rem;line-height:1.75;color:#374151;margin-bottom:14px}
+
+        pre{background:#0f172a;color:#e2e8f0;padding:18px 22px;border-radius:12px;overflow-x:auto;font-size:.8rem;line-height:1.65;margin:14px 0;border:1px solid rgba(255,255,255,.06)}
+        code{font-family:"SF Mono","Fira Code",Menlo,monospace}
+        .ic{background:#f3f4f6;padding:2px 8px;border-radius:6px;font-size:.82rem;font-family:"SF Mono","Fira Code",Menlo,monospace;color:#be185d}
+
+        table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.86rem}
+        th{background:#f9fafb;text-align:left;padding:10px 14px;font-weight:600;border-bottom:2px solid var(--border);font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+        td{padding:10px 14px;border-bottom:1px solid var(--border);color:#374151}
+        tr:hover td{background:#fafafa}
+        .method{display:inline-block;padding:2px 10px;border-radius:6px;font-size:.72rem;font-weight:700;font-family:monospace;letter-spacing:.5px}
+        .m-get{background:#dbeafe;color:#1d4ed8}
+        .m-post{background:#dcfce7;color:#166534}
+        .m-delete{background:#fee2e2;color:#991b1b}
+
+        .note{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:14px 18px;font-size:.84rem;color:#92400e;margin:16px 0;line-height:1.6}
+        .note-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+
+        .footer-wrap{border-top:1px solid var(--border);padding:20px 24px;margin-top:auto}
+        .footer{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;font-size:.78rem;color:#9ca3af;flex-wrap:wrap;gap:10px}
+        .footer-links{display:flex;gap:20px}
+        .footer-links a{transition:color .2s}
+        .footer-links a:hover{color:var(--accent)}
+
+        @media(max-width:768px){
+            .nav{padding:14px 16px;flex-wrap:wrap;gap:10px}.nav-links{display:none}
+            .sidebar{display:none}
+            .layout{flex-direction:column}
+            .footer{flex-direction:column;align-items:center;text-align:center}
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <header class="nav">
+        <a href="index.html" class="nav-logo"><div class="logo-box">AP</div> AnPin AI</a>
+        <nav class="nav-links">
+            <a href="index.html">首页</a>
+            <a href="pricing.html">模型广场</a>
+            <a href="tutorial.html">教程</a>
+            <a href="docs.html" class="active">文档</a>
+        </nav>
+        <a href="#" class="btn-console">控制台 ↗</a>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <h4>概览</h4>
+            <ul>
+                <li><a href="#intro" class="active">简介</a></li>
+                <li><a href="#auth">认证方式</a></li>
+                <li><a href="#base-url">Base URL</a></li>
+            </ul>
+            <h4>API 参考</h4>
+            <ul>
+                <li><a href="#messages">Messages</a></li>
+                <li><a href="#models">Models</a></li>
+                <li><a href="#streaming">Streaming</a></li>
+                <li><a href="#openai">OpenAI 兼容</a></li>
+                <li><a href="#vision">多模态 / 视觉</a></li>
+            </ul>
+            <h4>其他</h4>
+            <ul>
+                <li><a href="#errors">错误处理</a></li>
+                <li><a href="#limits">速率限制</a></li>
+                <li><a href="#sdk">SDK 支持</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <h1>API 文档</h1>
+            <p class="subtitle">AnPin AI 兼容 Anthropic / OpenAI API 格式，可无缝切换使用。</p>
+
+            <h2 id="intro">简介</h2>
+            <p>AnPin AI 提供统一的 API 网关服务，通过一个 API Key 即可访问 Claude、GPT、Gemini、DeepSeek 等多种大模型。API 接口与 Anthropic / OpenAI 官方完全兼容，现有代码仅需修改 Base URL 即可接入。</p>
+            <div class="note note-info">💡 如果你已经在使用 Anthropic 或 OpenAI 的官方 SDK，只需更换 <code class="ic">base_url</code> 和 <code class="ic">api_key</code> 即可立即使用 AnPin AI。</div>
+
+            <h2 id="auth">认证方式</h2>
+            <p>所有 API 请求都需要在 HTTP Header 中携带 API Key 进行认证。支持以下两种格式：</p>
+            <h3>Anthropic 格式</h3>
+            <pre><code>x-api-key: sk-anpin-xxxxxxxxxxxx</code></pre>
+            <h3>Bearer Token 格式</h3>
+            <pre><code>Authorization: Bearer sk-anpin-xxxxxxxxxxxx</code></pre>
+            <div class="note">⚠️ 请勿在客户端或前端代码中暴露 API Key。API Key 应仅在服务端使用。</div>
+
+            <h2 id="base-url">Base URL</h2>
+            <p>将请求的 Base URL 替换为你的 AnPin AI 部署地址即可：</p>
+            <pre><code># Anthropic 兼容端点
+https://your-domain.com
+
+# OpenAI 兼容端点
+https://your-domain.com/openai</code></pre>
+
+            <h2 id="messages">Messages API</h2>
+            <p>发送消息并获取 AI 回复，兼容 Anthropic Messages API。</p>
+            <h3>请求</h3>
+            <table>
+                <tr><th>项目</th><th>值</th></tr>
+                <tr><td>方法</td><td><span class="method m-post">POST</span></td></tr>
+                <tr><td>路径</td><td><code class="ic">/v1/messages</code></td></tr>
+                <tr><td>Content-Type</td><td><code class="ic">application/json</code></td></tr>
+            </table>
+
+            <h3>请求体参数</h3>
+            <table>
+                <tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr>
+                <tr><td><code class="ic">model</code></td><td>string</td><td>是</td><td>模型名称，如 claude-sonnet-4-20250514</td></tr>
+                <tr><td><code class="ic">messages</code></td><td>array</td><td>是</td><td>对话消息列表</td></tr>
+                <tr><td><code class="ic">max_tokens</code></td><td>integer</td><td>是</td><td>最大输出 Token 数</td></tr>
+                <tr><td><code class="ic">system</code></td><td>string</td><td>否</td><td>系统提示词</td></tr>
+                <tr><td><code class="ic">temperature</code></td><td>number</td><td>否</td><td>采样温度 (0-1)，默认 1</td></tr>
+                <tr><td><code class="ic">top_p</code></td><td>number</td><td>否</td><td>Top-P 采样 (0-1)</td></tr>
+                <tr><td><code class="ic">top_k</code></td><td>integer</td><td>否</td><td>Top-K 采样</td></tr>
+                <tr><td><code class="ic">stream</code></td><td>boolean</td><td>否</td><td>是否启用流式输出</td></tr>
+                <tr><td><code class="ic">stop_sequences</code></td><td>array</td><td>否</td><td>停止生成的字符串序列</td></tr>
+                <tr><td><code class="ic">metadata</code></td><td>object</td><td>否</td><td>请求元数据，如 user_id</td></tr>
+            </table>
+
+            <h3>示例请求</h3>
+            <pre><code>curl https://your-domain.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: sk-anpin-xxxx" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-sonnet-4-20250514",
+    "max_tokens": 1024,
+    "system": "你是一个专业的技术顾问。",
+    "messages": [
+      {"role": "user", "content": "什么是 API 网关？"}
+    ]
+  }'</code></pre>
+
+            <h3>示例响应</h3>
+            <pre><code>{
+  "id": "msg_xxxx",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "API 网关是..."
+    }
+  ],
+  "model": "claude-sonnet-4-20250514",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 25,
+    "output_tokens": 150
+  }
+}</code></pre>
+
+            <h2 id="models">Models API</h2>
+            <p>查询当前可用的模型列表。</p>
+            <table>
+                <tr><th>项目</th><th>值</th></tr>
+                <tr><td>方法</td><td><span class="method m-get">GET</span></td></tr>
+                <tr><td>路径</td><td><code class="ic">/v1/models</code></td></tr>
+            </table>
+            <h3>示例响应</h3>
+            <pre><code>{
+  "data": [
+    {
+      "id": "claude-sonnet-4-20250514",
+      "name": "Claude Sonnet 4",
+      "provider": "anthropic"
+    },
+    {
+      "id": "gpt-4o",
+      "name": "GPT-4o",
+      "provider": "openai"
+    }
+  ]
+}</code></pre>
+
+            <h2 id="streaming">Streaming（流式输出）</h2>
+            <p>在请求中设置 <code class="ic">"stream": true</code> 即可启用 Server-Sent Events (SSE) 流式输出，实时获取模型生成的内容。</p>
+            <h3>请求示例</h3>
+            <pre><code>curl https://your-domain.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: sk-anpin-xxxx" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-sonnet-4-20250514",
+    "max_tokens": 1024,
+    "stream": true,
+    "messages": [
+      {"role": "user", "content": "写一首短诗"}
+    ]
+  }'</code></pre>
+
+            <h3>SSE 事件类型</h3>
+            <table>
+                <tr><th>事件</th><th>说明</th></tr>
+                <tr><td><code class="ic">message_start</code></td><td>消息开始，包含消息元数据</td></tr>
+                <tr><td><code class="ic">content_block_start</code></td><td>内容块开始</td></tr>
+                <tr><td><code class="ic">content_block_delta</code></td><td>内容增量更新（文本片段）</td></tr>
+                <tr><td><code class="ic">content_block_stop</code></td><td>内容块结束</td></tr>
+                <tr><td><code class="ic">message_delta</code></td><td>消息级别更新（stop_reason 等）</td></tr>
+                <tr><td><code class="ic">message_stop</code></td><td>消息完成</td></tr>
+            </table>
+
+            <h2 id="openai">OpenAI 兼容接口</h2>
+            <p>AnPin AI 同时提供 OpenAI Chat Completions 兼容接口，方便已有 OpenAI 集成的项目迁移。</p>
+            <table>
+                <tr><th>项目</th><th>值</th></tr>
+                <tr><td>方法</td><td><span class="method m-post">POST</span></td></tr>
+                <tr><td>路径</td><td><code class="ic">/openai/v1/chat/completions</code></td></tr>
+            </table>
+            <h3>示例请求</h3>
+            <pre><code>curl https://your-domain.com/openai/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-anpin-xxxx" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {"role": "system", "content": "You are a helpful assistant."},
+      {"role": "user", "content": "Hello!"}
+    ]
+  }'</code></pre>
+            <h3>Python (OpenAI SDK) 示例</h3>
+            <pre><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-anpin-xxxx",
+    base_url="https://your-domain.com/openai/v1"
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "user", "content": "你好"}
+    ]
+)
+print(response.choices[0].message.content)</code></pre>
+
+            <h2 id="vision">多模态 / 视觉</h2>
+            <p>支持发送图片给模型进行视觉理解。在 <code class="ic">messages</code> 中使用 <code class="ic">image</code> 类型的 content block：</p>
+            <pre><code>{
+  "model": "claude-sonnet-4-20250514",
+  "max_tokens": 1024,
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "image",
+          "source": {
+            "type": "base64",
+            "media_type": "image/png",
+            "data": "iVBORw0KGgo..."
+          }
+        },
+        {
+          "type": "text",
+          "text": "请描述这张图片"
+        }
+      ]
+    }
+  ]
+}</code></pre>
+            <div class="note note-info">💡 支持的图片格式：JPEG、PNG、GIF、WebP。单张图片最大 5MB。</div>
+
+            <h2 id="errors">错误处理</h2>
+            <p>API 返回标准 HTTP 状态码。出错时，响应体包含 JSON 格式的错误信息：</p>
+            <pre><code>{
+  "type": "error",
+  "error": {
+    "type": "invalid_request_error",
+    "message": "max_tokens: Field required"
+  }
+}</code></pre>
+            <table>
+                <tr><th>状态码</th><th>类型</th><th>说明</th></tr>
+                <tr><td>400</td><td>invalid_request_error</td><td>请求参数错误</td></tr>
+                <tr><td>401</td><td>authentication_error</td><td>API Key 无效或未提供</td></tr>
+                <tr><td>403</td><td>permission_error</td><td>权限不足或账户已被禁用</td></tr>
+                <tr><td>404</td><td>not_found_error</td><td>请求的模型或资源不存在</td></tr>
+                <tr><td>429</td><td>rate_limit_error</td><td>请求频率超限</td></tr>
+                <tr><td>500</td><td>api_error</td><td>服务器内部错误</td></tr>
+                <tr><td>529</td><td>overloaded_error</td><td>上游过载，请稍后重试</td></tr>
+            </table>
+
+            <h2 id="limits">速率限制</h2>
+            <p>速率限制取决于你的账户等级和套餐配置。超出限制时会返回 <code class="ic">429</code> 状态码。响应头中包含限制信息：</p>
+            <table>
+                <tr><th>Header</th><th>说明</th></tr>
+                <tr><td><code class="ic">x-ratelimit-limit</code></td><td>时间窗口内允许的最大请求数</td></tr>
+                <tr><td><code class="ic">x-ratelimit-remaining</code></td><td>当前窗口剩余请求数</td></tr>
+                <tr><td><code class="ic">x-ratelimit-reset</code></td><td>限制重置的时间戳</td></tr>
+            </table>
+            <p>建议在代码中实现指数退避重试机制：</p>
+            <pre><code>import time
+import anthropic
+
+client = anthropic.Anthropic(
+    api_key="sk-anpin-xxxx",
+    base_url="https://your-domain.com"
+)
+
+for attempt in range(3):
+    try:
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=1024,
+            messages=[{"role": "user", "content": "Hello"}]
+        )
+        break
+    except anthropic.RateLimitError:
+        time.sleep(2 ** attempt)</code></pre>
+
+            <h2 id="sdk">SDK 支持</h2>
+            <p>由于完全兼容 Anthropic 和 OpenAI API，你可以直接使用官方 SDK：</p>
+            <table>
+                <tr><th>语言</th><th>SDK</th><th>安装命令</th></tr>
+                <tr><td>Python</td><td>anthropic</td><td><code class="ic">pip install anthropic</code></td></tr>
+                <tr><td>Python</td><td>openai</td><td><code class="ic">pip install openai</code></td></tr>
+                <tr><td>Node.js</td><td>@anthropic-ai/sdk</td><td><code class="ic">npm install @anthropic-ai/sdk</code></td></tr>
+                <tr><td>Node.js</td><td>openai</td><td><code class="ic">npm install openai</code></td></tr>
+                <tr><td>Go</td><td>anthropic-go</td><td><code class="ic">go get github.com/anthropics/anthropic-sdk-go</code></td></tr>
+            </table>
+            <p>只需在初始化 SDK 时指定自定义 <code class="ic">base_url</code> 即可。详细用法请参阅 <a href="tutorial.html" style="color:var(--accent);font-weight:600">快速上手教程</a>。</p>
+        </main>
+    </div>
+
+    <div class="footer-wrap">
+        <footer class="footer">
+            <div>&copy; 2026 AnPin AI. 保留所有权利.</div>
+            <div class="footer-links">
+                <a href="docs.html">文档</a>
+                <a href="terms.html">服务条款</a>
+                <a href="privacy.html">隐私政策</a>
+                <a href="policy.html">使用政策</a>
+            </div>
+        </footer>
+    </div>
+</div>
+</body>
+</html>

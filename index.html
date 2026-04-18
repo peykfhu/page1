@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnPin AI - 智能大模型聚合网关</title>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --accent: #8b5cf6;
+            --accent2: #6d28d9;
+            --card: #ffffff;
+            --nav-bg: rgba(255,255,255,0.72);
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        a{text-decoration:none;color:inherit}
+        body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+        .page-wrap{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}
+        .bg-grid{position:absolute;inset:0;background-image:radial-gradient(#d1d5db 1px,transparent 1px);background-size:32px 32px;opacity:.3;z-index:0}
+        .bg-glow{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%);width:1000px;height:1000px;background:radial-gradient(circle,rgba(139,92,246,.07) 0%,rgba(99,102,241,.03) 40%,transparent 70%);z-index:0;pointer-events:none}
+
+        .circles{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);z-index:0;pointer-events:none}
+        .circle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px dashed rgba(0,0,0,.04)}
+        .c1{width:300px;height:300px}.c2{width:550px;height:550px}.c3{width:800px;height:800px}
+
+        .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;position:relative;z-index:10}
+        .nav-logo{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:10px;letter-spacing:-.5px}
+        .logo-box{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#1e293b,#0f172a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700}
+        .nav-links{display:flex;gap:20px;align-items:center;background:var(--nav-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:8px 26px;border-radius:40px;border:1px solid rgba(0,0,0,.04);box-shadow:0 2px 12px rgba(0,0,0,.03);font-size:.86rem;font-weight:500}
+        .nav-links a{color:var(--muted);transition:color .2s;display:flex;align-items:center;gap:6px}
+        .nav-links a:hover,.nav-links a.active{color:var(--accent)}
+        .dot-green{width:5px;height:5px;background:#10b981;border-radius:50%;display:inline-block}
+        .btn-console{background:#18181b;color:#fff;padding:8px 20px;border-radius:30px;display:flex;align-items:center;gap:6px;font-size:.86rem;font-weight:600;transition:all .25s;border:1px solid transparent}
+        .btn-console:hover{background:#000;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+
+        .hero{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;z-index:10;padding:0 20px}
+        .hero-badge{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);border:1px solid var(--border);padding:6px 16px;border-radius:30px;font-size:.76rem;color:var(--muted);margin-bottom:28px;display:flex;align-items:center;gap:6px;font-weight:500}
+        .hero-title{font-size:clamp(3rem,8vw,5.5rem);font-weight:900;letter-spacing:-3px;line-height:1.08;margin-bottom:18px;background:linear-gradient(135deg,#111827 0%,#4b5563 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero-sub{font-size:1.3rem;color:var(--muted);margin-bottom:42px;font-weight:300;letter-spacing:2px;height:2rem}
+        .cursor{color:var(--accent);animation:blink 1s step-end infinite}
+        @keyframes blink{50%{opacity:0}}
+        .hero-btns{display:flex;gap:14px;align-items:center}
+        .btn-main{background:#18181b;color:#fff;font-size:1rem;padding:14px 36px;border-radius:12px;font-weight:600;transition:all .25s;box-shadow:0 8px 20px rgba(0,0,0,.1);display:inline-block}
+        .btn-main:hover{background:#000;transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.16)}
+        .btn-secondary{color:var(--text);font-size:.95rem;padding:14px 28px;border-radius:12px;font-weight:600;transition:all .25s;border:1px solid var(--border);background:var(--card)}
+        .btn-secondary:hover{border-color:#d1d5db;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.06)}
+
+        .features{position:relative;z-index:10;max-width:1100px;margin:60px auto 0;padding:0 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+        .feat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 22px;transition:all .25s}
+        .feat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.05);border-color:#d1d5db}
+        .feat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px}
+        .feat-card h3{font-size:.95rem;font-weight:700;margin-bottom:8px}
+        .feat-card p{font-size:.84rem;color:var(--muted);line-height:1.65}
+
+        .stats{position:relative;z-index:10;max-width:800px;margin:50px auto 0;padding:0 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;text-align:center}
+        .stat-item h4{font-size:2rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .stat-item p{font-size:.82rem;color:var(--muted);margin-top:4px}
+
+        .bottom{padding:40px 20px;text-align:center;position:relative;z-index:10}
+        .pills{display:flex;gap:10px;justify-content:center;margin-bottom:30px;flex-wrap:wrap}
+        .pill{background:#fff;border:1px solid var(--border);padding:6px 14px;border-radius:30px;font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:6px;font-weight:500;transition:all .2s}
+        .pill:hover{border-color:#d1d5db;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+        .footer{width:100%;max-width:1100px;margin:0 auto;border-top:1px solid var(--border);padding-top:20px;display:flex;justify-content:space-between;font-size:.78rem;color:#9ca3af;flex-wrap:wrap;gap:10px}
+        .footer-links{display:flex;gap:20px}
+        .footer-links a{transition:color .2s}
+        .footer-links a:hover{color:var(--accent)}
+
+        @media(max-width:768px){
+            .nav{padding:14px 16px;flex-wrap:wrap;gap:10px}
+            .nav-links{display:none}
+            .features{grid-template-columns:1fr}
+            .stats{grid-template-columns:1fr;gap:24px}
+            .hero-title{letter-spacing:-1px}
+            .hero-btns{flex-direction:column}
+            .footer{flex-direction:column;align-items:center;text-align:center}
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrap">
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+    <div class="circles"><div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div></div>
+
+    <header class="nav">
+        <a href="index.html" class="nav-logo"><div class="logo-box">AP</div> AnPin AI</a>
+        <nav class="nav-links">
+            <a href="index.html" class="active"><span class="dot-green"></span> 首页</a>
+            <a href="pricing.html">模型广场</a>
+            <a href="tutorial.html">教程</a>
+            <a href="docs.html">文档</a>
+        </nav>
+        <a href="#" class="btn-console">控制台 ↗</a>
+    </header>
+
+    <main class="hero">
+        <div class="hero-badge"><span style="color:var(--accent)">●</span> AI API Gateway · 全球加速</div>
+        <h1 class="hero-title">AnPin AI</h1>
+        <div class="hero-sub"><span id="tw"></span><span class="cursor">|</span></div>
+        <div class="hero-btns">
+            <a href="#" class="btn-main">进入控制台 &rarr;</a>
+            <a href="docs.html" class="btn-secondary">查看文档</a>
+        </div>
+    </main>
+
+    <section class="stats">
+        <div class="stat-item"><h4>10+</h4><p>可用模型</p></div>
+        <div class="stat-item"><h4>99.9%</h4><p>服务可用性</p></div>
+        <div class="stat-item"><h4>&lt;200ms</h4><p>平均延迟</p></div>
+    </section>
+
+    <section class="features">
+        <div class="feat-card">
+            <div class="feat-icon" style="background:#f0fdf4;color:#16a34a">⚡</div>
+            <h3>极速响应</h3>
+            <p>全球多节点部署，智能路由选择最优线路，确保 API 调用毫秒级响应。</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-icon" style="background:#eff6ff;color:#2563eb">🔗</div>
+            <h3>多模型聚合</h3>
+            <p>一个 API Key 接入 Claude、GPT、Gemini、DeepSeek 等主流大模型。</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-icon" style="background:#fef3c7;color:#d97706">🛡️</div>
+            <h3>高可用保障</h3>
+            <p>智能负载均衡与故障自动切换，服务可用性 99.9% 以上。</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-icon" style="background:#f5f3ff;color:#7c3aed">📊</div>
+            <h3>透明计费</h3>
+            <p>按实际用量计费，详细的用量报表与实时余额提醒，消费一目了然。</p>
+        </div>
+    </section>
+
+    <div class="bottom">
+        <div class="pills">
+            <div class="pill"><span style="color:#f97316">●</span> Claude</div>
+            <div class="pill"><span style="color:#10b981">●</span> GPT</div>
+            <div class="pill"><span style="color:#3b82f6">●</span> Gemini</div>
+            <div class="pill"><span style="color:#8b5cf6">●</span> DeepSeek</div>
+        </div>
+        <footer class="footer">
+            <div>&copy; 2026 AnPin AI. 保留所有权利.</div>
+            <div class="footer-links">
+                <a href="docs.html">文档</a>
+                <a href="terms.html">服务条款</a>
+                <a href="privacy.html">隐私政策</a>
+                <a href="policy.html">使用政策</a>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<script>
+const words=["代码洪流，无畏挑战","智能负载，极致稳定","聚合全球，一站接入"];
+let i=0,j=0,del=false;
+function tick(){
+    const w=words[i];
+    document.getElementById("tw").textContent=w.substring(0,del?--j:++j);
+    if(!del&&j===w.length){del=true;setTimeout(tick,1800);return}
+    if(del&&j===0){del=false;i=(i+1)%words.length}
+    setTimeout(tick,del?50:130);
+}
+document.addEventListener("DOMContentLoaded",()=>setTimeout(tick,600));
+</script>
+</body>
+</html>

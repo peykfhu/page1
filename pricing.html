@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型广场 - AnPin AI</title>
+    <style>
+        :root{--bg:#fafafa;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--accent:#8b5cf6;--card:#fff;--nav-bg:rgba(255,255,255,.72)}
+        *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}a{text-decoration:none;color:inherit}
+        body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+        .page{min-height:100vh;display:flex;flex-direction:column}
+
+        .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;position:relative;z-index:10}
+        .nav-logo{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:10px;letter-spacing:-.5px}
+        .logo-box{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#1e293b,#0f172a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700}
+        .nav-links{display:flex;gap:20px;align-items:center;background:var(--nav-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:8px 26px;border-radius:40px;border:1px solid rgba(0,0,0,.04);box-shadow:0 2px 12px rgba(0,0,0,.03);font-size:.86rem;font-weight:500}
+        .nav-links a{color:var(--muted);transition:color .2s;display:flex;align-items:center;gap:6px}
+        .nav-links a:hover,.nav-links a.active{color:var(--accent)}
+        .btn-console{background:#18181b;color:#fff;padding:8px 20px;border-radius:30px;font-size:.86rem;font-weight:600;transition:all .25s}
+        .btn-console:hover{background:#000;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+
+        .container{max-width:1200px;margin:0 auto;padding:0 24px;flex:1}
+
+        .page-header{text-align:center;padding:50px 0 28px}
+        .page-header h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+        .page-header p{color:var(--muted);font-size:.95rem;max-width:500px;margin:0 auto}
+
+        .filters{display:flex;gap:8px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}
+        .filter-btn{background:var(--card);border:1px solid var(--border);padding:7px 18px;border-radius:30px;font-size:.82rem;cursor:pointer;transition:all .2s;font-weight:500;color:var(--muted)}
+        .filter-btn:hover{border-color:#d1d5db;color:var(--text)}
+        .filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+        .search-bar{max-width:460px;margin:0 auto 28px;position:relative}
+        .search-bar input{width:100%;padding:11px 18px 11px 42px;border:1px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--card);outline:none;transition:all .2s}
+        .search-bar input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(139,92,246,.08)}
+        .search-bar .icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.95rem}
+
+        .model-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;padding-bottom:60px}
+        .model-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;transition:all .25s}
+        .model-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.05);border-color:#d1d5db}
+        .model-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+        .model-name{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px}
+        .platform-tag{font-size:.68rem;padding:3px 10px;border-radius:20px;font-weight:600;letter-spacing:.3px}
+        .tag-anthropic{background:#fff7ed;color:#ea580c}
+        .tag-openai{background:#f0fdf4;color:#16a34a}
+        .tag-gemini{background:#eff6ff;color:#2563eb}
+        .tag-deepseek{background:#f5f3ff;color:#7c3aed}
+        .model-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+        .model-tag{font-size:.7rem;padding:2px 9px;border-radius:10px;background:#f3f4f6;color:var(--muted);font-weight:500}
+        .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+        .price-item{background:#f9fafb;border-radius:8px;padding:9px 10px;text-align:center}
+        .price-label{font-size:.68rem;color:var(--muted);margin-bottom:3px}
+        .price-value{font-size:.95rem;font-weight:700;color:var(--text)}
+        .price-unit{font-size:.65rem;color:var(--muted);font-weight:400}
+
+        .footer-wrap{border-top:1px solid var(--border);padding:20px 0;margin-top:auto}
+        .footer{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;font-size:.78rem;color:#9ca3af;flex-wrap:wrap;gap:10px}
+        .footer-links{display:flex;gap:20px}
+        .footer-links a{transition:color .2s}
+        .footer-links a:hover{color:var(--accent)}
+
+        @media(max-width:768px){
+            .nav{padding:14px 16px;flex-wrap:wrap;gap:10px}
+            .nav-links{display:none}
+            .model-grid{grid-template-columns:1fr}
+            .page-header h1{font-size:1.8rem}
+            .footer{flex-direction:column;align-items:center;text-align:center}
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <header class="nav">
+        <a href="index.html" class="nav-logo"><div class="logo-box">AP</div> AnPin AI</a>
+        <nav class="nav-links">
+            <a href="index.html">首页</a>
+            <a href="pricing.html" class="active">模型广场</a>
+            <a href="tutorial.html">教程</a>
+            <a href="docs.html">文档</a>
+        </nav>
+        <a href="#" class="btn-console">控制台 ↗</a>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>模型广场</h1>
+            <p>一站式接入全球领先 AI 大模型，按量计费，透明定价</p>
+        </div>
+
+        <div class="search-bar">
+            <span class="icon">🔍</span>
+            <input type="text" id="search" placeholder="搜索模型名称..." oninput="filterModels()">
+        </div>
+
+        <div class="filters" id="filters">
+            <button class="filter-btn active" onclick="setFilter('all',this)">全部</button>
+            <button class="filter-btn" onclick="setFilter('anthropic',this)">Anthropic</button>
+            <button class="filter-btn" onclick="setFilter('openai',this)">OpenAI</button>
+            <button class="filter-btn" onclick="setFilter('gemini',this)">Gemini</button>
+            <button class="filter-btn" onclick="setFilter('deepseek',this)">DeepSeek</button>
+        </div>
+
+        <div class="model-grid" id="grid"></div>
+    </div>
+
+    <div class="footer-wrap">
+        <footer class="footer">
+            <div>&copy; 2026 AnPin AI. 保留所有权利.</div>
+            <div class="footer-links">
+                <a href="docs.html">文档</a>
+                <a href="terms.html">服务条款</a>
+                <a href="privacy.html">隐私政策</a>
+                <a href="policy.html">使用政策</a>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<script>
+const models=[
+    {name:"claude opus 4.6",platform:"anthropic",tags:["旗舰","推理","代码"],input:15,output:75,cache_write:18.75,cache_read:1.5},
+    {name:"claude sonnet 4.6",platform:"anthropic",tags:["推理","代码","视觉"],input:3,output:15,cache_write:3.75,cache_read:0.3},
+    {name:"claude haiku 4.5",platform:"anthropic",tags:["快速","轻量"],input:0.8,output:4,cache_write:1,cache_read:0.08},
+    {name:"gpt-4o",platform:"openai",tags:["多模态","推理"],input:2.5,output:10,cache_write:null,cache_read:null},
+    {name:"gpt-4o-mini",platform:"openai",tags:["快速","经济"],input:0.15,output:0.6,cache_write:null,cache_read:null},
+    {name:"o3",platform:"openai",tags:["推理","旗舰"],input:10,output:40,cache_write:null,cache_read:null},
+    {name:"o4-mini",platform:"openai",tags:["推理","经济"],input:1.1,output:4.4,cache_write:null,cache_read:null},
+    {name:"gemini-2.5-pro",platform:"gemini",tags:["推理","多模态"],input:1.25,output:10,cache_write:null,cache_read:null},
+    {name:"gemini-2.5-flash",platform:"gemini",tags:["快速","经济"],input:0.15,output:0.6,cache_write:null,cache_read:null},
+    {name:"gemini-2.0-flash",platform:"gemini",tags:["快速","视觉"],input:0.1,output:0.4,cache_write:null,cache_read:null},
+    {name:"deepseek-v3",platform:"deepseek",tags:["通用","经济"],input:0.27,output:1.1,cache_write:null,cache_read:0.07},
+    {name:"deepseek-r1",platform:"deepseek",tags:["推理","代码"],input:0.55,output:2.19,cache_write:null,cache_read:0.14},
+];
+
+let currentFilter='all';
+
+function tagClass(p){return'tag-'+p}
+function priceStr(v){return v==null?'—':'$'+v.toFixed(2)}
+
+function renderCard(m){
+    const cacheCols=m.cache_write!=null||m.cache_read!=null?`
+        <div class="price-item"><div class="price-label">缓存写入</div><div class="price-value">${priceStr(m.cache_write)} <span class="price-unit">/MTok</span></div></div>
+        <div class="price-item"><div class="price-label">缓存读取</div><div class="price-value">${priceStr(m.cache_read)} <span class="price-unit">/MTok</span></div></div>`:'';
+    return`<div class="model-card" data-platform="${m.platform}" data-name="${m.name}">
+        <div class="model-head">
+            <span class="model-name">${m.name}</span>
+            <span class="platform-tag ${tagClass(m.platform)}">${m.platform}</span>
+        </div>
+        <div class="model-tags">${m.tags.map(t=>'<span class="model-tag">'+t+'</span>').join('')}</div>
+        <div class="price-grid">
+            <div class="price-item"><div class="price-label">输入价格</div><div class="price-value">${priceStr(m.input)} <span class="price-unit">/MTok</span></div></div>
+            <div class="price-item"><div class="price-label">输出价格</div><div class="price-value">${priceStr(m.output)} <span class="price-unit">/MTok</span></div></div>
+            ${cacheCols}
+        </div>
+    </div>`;
+}
+
+function filterModels(){
+    const q=document.getElementById('search').value.toLowerCase();
+    document.querySelectorAll('.model-card').forEach(c=>{
+        const p=c.dataset.platform;
+        const n=c.dataset.name;
+        const matchP=currentFilter==='all'||p===currentFilter;
+        const matchQ=!q||n.includes(q);
+        c.style.display=matchP&&matchQ?'':'none';
+    });
+}
+
+function setFilter(f,btn){
+    currentFilter=f;
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    filterModels();
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('grid').innerHTML=models.map(renderCard).join('');
+});
+</script>
+</body>
+</html>
