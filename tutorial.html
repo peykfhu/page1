@@ -8,57 +8,77 @@
         :root{--bg:#fafafa;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--accent:#8b5cf6;--card:#fff;--nav-bg:rgba(255,255,255,.72)}
         *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}a{text-decoration:none;color:inherit}
         body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         .page{min-height:100vh;display:flex;flex-direction:column}
 
-        .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;position:relative;z-index:10}
-        .nav-logo{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:10px;letter-spacing:-.5px}
-        .logo-box{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#1e293b,#0f172a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700}
-        .nav-links{display:flex;gap:20px;align-items:center;background:var(--nav-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:8px 26px;border-radius:40px;border:1px solid rgba(0,0,0,.04);box-shadow:0 2px 12px rgba(0,0,0,.03);font-size:.86rem;font-weight:500}
-        .nav-links a{color:var(--muted);transition:color .2s}
+        .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;position:relative;z-index:10;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both}
+        .nav-logo{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:10px;letter-spacing:-.5px;transition:opacity .3s}
+        .nav-logo:hover{opacity:.8}
+        .logo-img{width:30px;height:30px;border-radius:7px;object-fit:cover}
+        .nav-links{display:flex;gap:20px;align-items:center;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:8px 26px;border-radius:40px;border:1px solid rgba(0,0,0,.04);box-shadow:0 2px 12px rgba(0,0,0,.03);font-size:.86rem;font-weight:500}
+        .nav-links a{color:var(--muted);transition:all .3s cubic-bezier(.22,1,.36,1);position:relative}
         .nav-links a:hover,.nav-links a.active{color:var(--accent)}
-        .btn-console{background:#18181b;color:#fff;padding:8px 20px;border-radius:30px;font-size:.86rem;font-weight:600;transition:all .25s}
-        .btn-console:hover{background:#000;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+        .nav-links a.active::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--accent)}
+        .btn-console{background:linear-gradient(135deg,#18181b,#27272a);color:#fff;padding:8px 22px;border-radius:30px;font-size:.86rem;font-weight:600;transition:all .35s cubic-bezier(.22,1,.36,1)}
+        .btn-console:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
 
-        .container{max-width:800px;margin:0 auto;padding:0 24px;flex:1}
-        .page-header{text-align:center;padding:50px 0 36px}
+        .container{max-width:820px;margin:0 auto;padding:0 24px;flex:1}
+        .page-header{text-align:center;padding:50px 0 36px;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) .1s both}
         .page-header h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
         .page-header p{color:var(--muted);font-size:.95rem}
 
-        .step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px;margin-bottom:16px;transition:all .25s}
-        .step:hover{box-shadow:0 6px 20px rgba(0,0,0,.04);border-color:#d1d5db}
+        .step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:16px;transition:all .35s cubic-bezier(.22,1,.36,1);animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both}
+        .step:nth-child(1){animation-delay:.15s}.step:nth-child(2){animation-delay:.2s}
+        .step:nth-child(3){animation-delay:.25s}.step:nth-child(4){animation-delay:.3s}
+        .step:nth-child(5){animation-delay:.35s}.step:nth-child(6){animation-delay:.4s}
+        .step:nth-child(7){animation-delay:.45s}
+        .step:hover{box-shadow:0 8px 24px rgba(0,0,0,.05);border-color:#d1d5db;transform:translateY(-2px)}
         .step-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-        .step-num{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#6d28d9);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0}
-        .step-title{font-size:1.05rem;font-weight:700}
-        .step p{color:var(--muted);font-size:.88rem;line-height:1.7;margin-bottom:12px}
+        .step-num{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#6d28d9);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;transition:transform .3s}
+        .step:hover .step-num{transform:scale(1.08)}
+        .step-title{font-size:1.08rem;font-weight:700}
+        .step p{color:#4b5563;font-size:.88rem;line-height:1.75;margin-bottom:12px}
         .step p:last-child{margin-bottom:0}
 
-        pre{background:#0f172a;color:#e2e8f0;padding:16px 20px;border-radius:10px;overflow-x:auto;font-size:.8rem;line-height:1.65;margin:12px 0;border:1px solid rgba(255,255,255,.06)}
+        pre{background:#0f172a;color:#e2e8f0;padding:16px 20px;border-radius:10px;overflow-x:auto;font-size:.79rem;line-height:1.7;margin:12px 0;border:1px solid rgba(255,255,255,.06);transition:box-shadow .3s}
+        pre:hover{box-shadow:0 4px 16px rgba(0,0,0,.1)}
         code{font-family:"SF Mono","Fira Code",Menlo,monospace}
         .inline-code{background:#f3f4f6;padding:2px 8px;border-radius:6px;font-size:.82rem;font-family:"SF Mono","Fira Code",Menlo,monospace;color:#be185d}
+        .comment{color:#64748b}
 
-        .tip{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 16px;font-size:.84rem;color:#166534;margin:12px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.6}
+        .tip{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 16px;font-size:.84rem;color:#166534;margin:12px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.65}
+        .warn{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;font-size:.84rem;color:#92400e;margin:12px 0;line-height:1.65}
 
-        .tab-group{margin:14px 0}
-        .tabs{display:flex;gap:2px;margin-bottom:0}
-        .tab-btn{padding:8px 18px;font-size:.8rem;font-weight:600;border:1px solid var(--border);border-bottom:none;border-radius:8px 8px 0 0;background:#f9fafb;color:var(--muted);cursor:pointer;transition:all .15s}
+        .tab-group{margin:16px 0}
+        .tabs{display:flex;gap:2px;margin-bottom:0;flex-wrap:wrap}
+        .tab-btn{padding:8px 16px;font-size:.78rem;font-weight:600;border:1px solid var(--border);border-bottom:none;border-radius:8px 8px 0 0;background:#f9fafb;color:var(--muted);cursor:pointer;transition:all .25s cubic-bezier(.22,1,.36,1)}
+        .tab-btn:hover{color:var(--text)}
         .tab-btn.active{background:#0f172a;color:#e2e8f0;border-color:#0f172a}
         .tab-content{display:none}
         .tab-content.active{display:block}
         .tab-content pre{margin-top:0;border-radius:0 10px 10px 10px}
 
-        .cta{text-align:center;padding:36px 0 60px}
-        .btn-main{background:#18181b;color:#fff;font-size:.95rem;padding:14px 34px;border-radius:12px;font-weight:600;transition:all .25s;display:inline-block;box-shadow:0 6px 16px rgba(0,0,0,.1)}
-        .btn-main:hover{background:#000;transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.15)}
+        .feature-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+        .feature-item{display:flex;align-items:center;gap:8px;font-size:.84rem;color:#4b5563;padding:6px 0}
+        .check{color:#10b981;font-weight:bold}
+
+        .cta{text-align:center;padding:40px 0 60px;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) .5s both}
+        .btn-main{background:linear-gradient(135deg,#18181b,#1f1f23);color:#fff;font-size:.95rem;padding:14px 34px;border-radius:12px;font-weight:600;transition:all .35s cubic-bezier(.22,1,.36,1);display:inline-block;box-shadow:0 6px 16px rgba(0,0,0,.1);position:relative;overflow:hidden}
+        .btn-main::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(139,92,246,.2),transparent);opacity:0;transition:opacity .35s}
+        .btn-main:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.15)}
+        .btn-main:hover::before{opacity:1}
 
         .footer-wrap{border-top:1px solid var(--border);padding:20px 24px;margin-top:auto}
-        .footer{max-width:800px;margin:0 auto;display:flex;justify-content:space-between;font-size:.78rem;color:#9ca3af;flex-wrap:wrap;gap:10px}
+        .footer{max-width:820px;margin:0 auto;display:flex;justify-content:space-between;font-size:.78rem;color:#9ca3af;flex-wrap:wrap;gap:10px}
         .footer-links{display:flex;gap:20px}
-        .footer-links a{transition:color .2s}
+        .footer-links a{transition:color .3s}
         .footer-links a:hover{color:var(--accent)}
 
         @media(max-width:768px){
             .nav{padding:14px 16px;flex-wrap:wrap;gap:10px}.nav-links{display:none}
             .page-header h1{font-size:1.8rem}
+            .feature-list{grid-template-columns:1fr}
             .footer{flex-direction:column;align-items:center;text-align:center}
         }
     </style>
@@ -66,80 +86,114 @@
 <body>
 <div class="page">
     <header class="nav">
-        <a href="index.html" class="nav-logo"><div class="logo-box">AP</div> AnPin AI</a>
+        <a href="index.html" class="nav-logo"><img src="logo.png" alt="AnPin AI" class="logo-img"> AnPin AI</a>
         <nav class="nav-links">
             <a href="index.html">首页</a>
             <a href="pricing.html">模型广场</a>
             <a href="tutorial.html" class="active">教程</a>
             <a href="docs.html">文档</a>
         </nav>
-        <a href="#" class="btn-console">控制台 ↗</a>
+        <a href="https://anpin.ai/login" class="btn-console">控制台 ↗</a>
     </header>
 
     <div class="container">
         <div class="page-header">
             <h1>快速上手</h1>
-            <p>只需几步，即可开始使用 AnPin AI 的大模型 API 服务</p>
+            <p>几分钟内完成接入，开始使用 AnPin AI 的大模型 API 服务</p>
         </div>
 
+        <!-- Step 1 -->
         <div class="step">
-            <div class="step-head"><div class="step-num">1</div><div class="step-title">注册账号</div></div>
-            <p>点击右上角「控制台」按钮，使用邮箱注册一个 AnPin AI 账号。注册完成后登录控制台。</p>
-            <div class="tip">💡 注册后即赠送免费额度，可直接开始体验所有模型。</div>
-        </div>
-
-        <div class="step">
-            <div class="step-head"><div class="step-num">2</div><div class="step-title">创建 API Key</div></div>
-            <p>登录控制台后，进入「API Keys」页面，点击「创建 API Key」按钮。创建成功后请妥善保存，Key 仅在创建时显示一次。</p>
+            <div class="step-head"><div class="step-num">1</div><div class="step-title">注册账号并获取 API Key</div></div>
+            <p>点击右上角「控制台」按钮，使用邮箱注册 AnPin AI 账号。注册完成后登录控制台，在「API Keys」页面点击「创建 API Key」。</p>
+            <div class="warn">⚠️ API Key 仅在创建时显示一次，请立即复制保存到安全位置。如果遗失，需要重新创建。</div>
+            <p>你的 API Key 格式如下：</p>
             <pre><code>sk-anpin-xxxxxxxxxxxxxxxxxxxx</code></pre>
+            <div class="tip">💡 注册后即赠送免费额度，可直接体验所有模型，无需充值即可开始。</div>
         </div>
 
+        <!-- Step 2 -->
         <div class="step">
-            <div class="step-head"><div class="step-num">3</div><div class="step-title">开始调用</div></div>
-            <p>AnPin AI 同时兼容 Anthropic 和 OpenAI API 格式，只需替换 <span class="inline-code">base_url</span> 即可。</p>
+            <div class="step-head"><div class="step-num">2</div><div class="step-title">安装 SDK</div></div>
+            <p>AnPin AI 同时兼容 Anthropic 和 OpenAI SDK，根据你的需求选择安装：</p>
 
             <div class="tab-group">
                 <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab(this,'python-anthropic')">Python (Anthropic)</button>
-                    <button class="tab-btn" onclick="switchTab(this,'python-openai')">Python (OpenAI)</button>
-                    <button class="tab-btn" onclick="switchTab(this,'curl-tab')">cURL</button>
-                    <button class="tab-btn" onclick="switchTab(this,'node-tab')">Node.js</button>
+                    <button class="tab-btn active" onclick="switchTab(this,'sdk-python')">Python</button>
+                    <button class="tab-btn" onclick="switchTab(this,'sdk-node')">Node.js</button>
+                    <button class="tab-btn" onclick="switchTab(this,'sdk-go')">Go</button>
                 </div>
-                <div class="tab-content active" id="python-anthropic">
+                <div class="tab-content active" id="sdk-python">
+                    <pre><code><span class="comment"># Anthropic SDK（推荐，功能更完整）</span>
+pip install anthropic
+
+<span class="comment"># 或 OpenAI SDK（适合从 OpenAI 迁移的项目）</span>
+pip install openai</code></pre>
+                </div>
+                <div class="tab-content" id="sdk-node">
+                    <pre><code><span class="comment"># Anthropic SDK</span>
+npm install @anthropic-ai/sdk
+
+<span class="comment"># 或 OpenAI SDK</span>
+npm install openai</code></pre>
+                </div>
+                <div class="tab-content" id="sdk-go">
+                    <pre><code>go get github.com/anthropics/anthropic-sdk-go</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step">
+            <div class="step-head"><div class="step-num">3</div><div class="step-title">发起第一次 API 调用</div></div>
+            <p>初始化客户端时只需替换 <span class="inline-code">base_url</span> 和 <span class="inline-code">api_key</span>，其他代码与官方 SDK 完全一致。</p>
+
+            <div class="tab-group">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab(this,'call-anthropic')">Python (Anthropic)</button>
+                    <button class="tab-btn" onclick="switchTab(this,'call-openai')">Python (OpenAI)</button>
+                    <button class="tab-btn" onclick="switchTab(this,'call-curl')">cURL</button>
+                    <button class="tab-btn" onclick="switchTab(this,'call-node')">Node.js</button>
+                </div>
+                <div class="tab-content active" id="call-anthropic">
                     <pre><code>import anthropic
 
 client = anthropic.Anthropic(
     api_key="sk-anpin-xxxx",
-    base_url="https://your-domain.com"
+    base_url="https://api.anpin.ai"
 )
 
 message = client.messages.create(
     model="claude-sonnet-4-20250514",
     max_tokens=1024,
     messages=[
-        {"role": "user", "content": "你好，请介绍一下自己"}
+        {"role": "user", "content": "你好，请用一句话介绍自己"}
     ]
 )
-print(message.content[0].text)</code></pre>
+print(message.content[0].text)
+
+<span class="comment"># 输出示例：</span>
+<span class="comment"># 你好！我是 Claude，一个由 Anthropic 创建的 AI 助手...</span></code></pre>
                 </div>
-                <div class="tab-content" id="python-openai">
+                <div class="tab-content" id="call-openai">
                     <pre><code>from openai import OpenAI
 
 client = OpenAI(
     api_key="sk-anpin-xxxx",
-    base_url="https://your-domain.com/openai/v1"
+    base_url="https://api.anpin.ai/openai/v1"
 )
 
 response = client.chat.completions.create(
     model="gpt-4o",
     messages=[
-        {"role": "user", "content": "你好，请介绍一下自己"}
+        {"role": "system", "content": "你是一个友好的助手"},
+        {"role": "user", "content": "你好，请用一句话介绍自己"}
     ]
 )
 print(response.choices[0].message.content)</code></pre>
                 </div>
-                <div class="tab-content" id="curl-tab">
-                    <pre><code>curl https://your-domain.com/v1/messages \
+                <div class="tab-content" id="call-curl">
+                    <pre><code>curl https://api.anpin.ai/v1/messages \
   -H "Content-Type: application/json" \
   -H "x-api-key: sk-anpin-xxxx" \
   -H "anthropic-version: 2023-06-01" \
@@ -151,19 +205,19 @@ print(response.choices[0].message.content)</code></pre>
     ]
   }'</code></pre>
                 </div>
-                <div class="tab-content" id="node-tab">
+                <div class="tab-content" id="call-node">
                     <pre><code>import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic({
   apiKey: "sk-anpin-xxxx",
-  baseURL: "https://your-domain.com",
+  baseURL: "https://api.anpin.ai",
 });
 
 const message = await client.messages.create({
   model: "claude-sonnet-4-20250514",
   max_tokens: 1024,
   messages: [
-    { role: "user", content: "你好，请介绍一下自己" },
+    { role: "user", content: "你好，请用一句话介绍自己" },
   ],
 });
 console.log(message.content[0].text);</code></pre>
@@ -171,26 +225,114 @@ console.log(message.content[0].text);</code></pre>
             </div>
         </div>
 
+        <!-- Step 4 -->
         <div class="step">
-            <div class="step-head"><div class="step-num">4</div><div class="step-title">充值与查看用量</div></div>
-            <p>在控制台「充值」页面选择套餐进行充值。在「个人中心」可以查看实时余额和详细用量统计。</p>
-            <p>所有模型按实际 Token 用量计费，价格详见 <a href="pricing.html" style="color:var(--accent);font-weight:600">模型广场</a>。</p>
+            <div class="step-head"><div class="step-num">4</div><div class="step-title">流式输出（Streaming）</div></div>
+            <p>对于需要实时展示回复的场景（如聊天界面），使用流式输出可以逐字显示模型回复，大幅提升用户体验。</p>
+
+            <div class="tab-group">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab(this,'stream-py')">Python</button>
+                    <button class="tab-btn" onclick="switchTab(this,'stream-node')">Node.js</button>
+                </div>
+                <div class="tab-content active" id="stream-py">
+                    <pre><code>import anthropic
+
+client = anthropic.Anthropic(
+    api_key="sk-anpin-xxxx",
+    base_url="https://api.anpin.ai"
+)
+
+<span class="comment"># 流式输出 —— 逐字打印</span>
+with client.messages.stream(
+    model="claude-sonnet-4-20250514",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "用 Python 写一个快速排序"}]
+) as stream:
+    for text in stream.text_stream:
+        print(text, end="", flush=True)
+
+print()  <span class="comment"># 换行</span></code></pre>
+                </div>
+                <div class="tab-content" id="stream-node">
+                    <pre><code>import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({
+  apiKey: "sk-anpin-xxxx",
+  baseURL: "https://api.anpin.ai",
+});
+
+const stream = client.messages.stream({
+  model: "claude-sonnet-4-20250514",
+  max_tokens: 1024,
+  messages: [
+    { role: "user", content: "用 JavaScript 写一个快速排序" },
+  ],
+});
+
+for await (const event of stream) {
+  if (event.type === "content_block_delta"
+      && event.delta.type === "text_delta") {
+    process.stdout.write(event.delta.text);
+  }
+}</code></pre>
+                </div>
+            </div>
         </div>
 
+        <!-- Step 5 -->
         <div class="step">
             <div class="step-head"><div class="step-num">5</div><div class="step-title">在 Claude Code 中使用</div></div>
-            <p>如果你使用 Claude Code（CLI / 桌面端 / IDE 插件），可以这样配置：</p>
-            <pre><code># 设置环境变量
+            <p>Claude Code 是 Anthropic 官方的 AI 编程工具，支持 CLI、桌面端和 IDE 插件。配置 AnPin AI 只需两个环境变量：</p>
+            <pre><code><span class="comment"># 方式一：设置环境变量（推荐）</span>
 export ANTHROPIC_API_KEY="sk-anpin-xxxx"
-export ANTHROPIC_BASE_URL="https://your-domain.com"
+export ANTHROPIC_BASE_URL="https://api.anpin.ai"
 
-# 启动 Claude Code
+<span class="comment"># 启动 Claude Code</span>
 claude</code></pre>
-            <div class="tip">💡 也可以在 Claude Code 的设置中配置 API Base URL，无需每次设置环境变量。</div>
+
+            <pre><code><span class="comment"># 方式二：Windows PowerShell</span>
+$env:ANTHROPIC_API_KEY="sk-anpin-xxxx"
+$env:ANTHROPIC_BASE_URL="https://api.anpin.ai"
+
+claude</code></pre>
+
+            <div class="tip">💡 也可以在 Claude Code 的设置面板中永久配置 API Base URL，无需每次手动设置环境变量。VS Code / JetBrains 插件用户可在插件设置中配置。</div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="step">
+            <div class="step-head"><div class="step-num">6</div><div class="step-title">在第三方工具中使用</div></div>
+            <p>AnPin AI 兼容所有支持自定义 API 端点的第三方工具。常见集成方式：</p>
+
+            <div class="feature-list">
+                <div class="feature-item"><span class="check">✓</span> ChatBox / ChatGPT-Next-Web</div>
+                <div class="feature-item"><span class="check">✓</span> Cursor / Windsurf</div>
+                <div class="feature-item"><span class="check">✓</span> Open WebUI / LobeChat</div>
+                <div class="feature-item"><span class="check">✓</span> Cline / Aider / Continue</div>
+                <div class="feature-item"><span class="check">✓</span> LangChain / LlamaIndex</div>
+                <div class="feature-item"><span class="check">✓</span> Dify / FastGPT / Coze</div>
+            </div>
+
+            <p>通用配置方式：在工具的 API 设置中，将 API Base URL 设为 <span class="inline-code">https://api.anpin.ai</span>（Anthropic 格式）或 <span class="inline-code">https://api.anpin.ai/openai/v1</span>（OpenAI 格式），填入你的 API Key 即可。</p>
+        </div>
+
+        <!-- Step 7 -->
+        <div class="step">
+            <div class="step-head"><div class="step-num">7</div><div class="step-title">充值与查看用量</div></div>
+            <p>在控制台「充值」页面选择套餐进行充值。在「个人中心」可查看实时余额、详细用量统计和调用日志。</p>
+            <p>所有模型按实际 Token 用量计费，价格详见 <a href="pricing.html" style="color:var(--accent);font-weight:600">模型广场</a>。API 文档详见 <a href="docs.html" style="color:var(--accent);font-weight:600">完整文档</a>。</p>
+
+            <div class="feature-list">
+                <div class="feature-item"><span class="check">✓</span> 实时余额查看</div>
+                <div class="feature-item"><span class="check">✓</span> 按模型用量统计</div>
+                <div class="feature-item"><span class="check">✓</span> 每日/月度账单</div>
+                <div class="feature-item"><span class="check">✓</span> API 调用日志</div>
+            </div>
         </div>
 
         <div class="cta">
-            <a href="#" class="btn-main">立即开始使用 &rarr;</a>
+            <a href="https://anpin.ai/login" class="btn-main">立即开始使用 &rarr;</a>
         </div>
     </div>
 
@@ -209,9 +351,10 @@ claude</code></pre>
 
 <script>
 function switchTab(btn,id){
-    btn.closest('.tab-group').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    const group=btn.closest('.tab-group');
+    group.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    btn.closest('.tab-group').querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    group.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
 </script>
