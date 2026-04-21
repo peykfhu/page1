@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +20,9 @@
         a{text-decoration:none;color:inherit}
         body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-        /* 入场动画 */
+        [data-lang="en"] .zh{display:none!important}
+        [data-lang="zh"] .en{display:none!important}
+
         @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
         @keyframes fadeIn{from{opacity:0}to{opacity:1}}
         @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
@@ -38,7 +40,6 @@
         .c2{width:550px;height:550px;animation-duration:120s;animation-direction:reverse}
         .c3{width:800px;height:800px;animation-duration:160s}
 
-        /* 导航 */
         .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;position:relative;z-index:10;animation:fadeUp .6s cubic-bezier(.22,1,.36,1) both}
         .nav-logo{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:10px;letter-spacing:-.5px;transition:opacity .3s}
         .nav-logo:hover{opacity:.8}
@@ -48,17 +49,20 @@
         .nav-links a:hover,.nav-links a.active{color:var(--accent)}
         .nav-links a.active::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--accent)}
         .dot-green{width:5px;height:5px;background:#10b981;border-radius:50%;display:inline-block;animation:pulse 2s ease infinite}
+        .nav-right{display:flex;align-items:center;gap:10px}
+        .lang-btn{background:none;border:1px solid var(--border);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all .3s;font-family:inherit}
+        .lang-btn:hover{border-color:var(--accent);color:var(--accent)}
         .btn-console{background:linear-gradient(135deg,#18181b,#27272a);color:#fff;padding:8px 22px;border-radius:30px;display:flex;align-items:center;gap:6px;font-size:.86rem;font-weight:600;transition:all .35s cubic-bezier(.22,1,.36,1);border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden}
         .btn-console::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(139,92,246,.15),transparent);opacity:0;transition:opacity .35s}
         .btn-console:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
         .btn-console:hover::before{opacity:1}
 
-        /* Hero */
         .hero{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;z-index:10;padding:0 20px}
         .hero-badge{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);border:1px solid var(--border);padding:6px 18px;border-radius:30px;font-size:.76rem;color:var(--muted);margin-bottom:28px;display:flex;align-items:center;gap:8px;font-weight:500;animation:fadeUp .6s cubic-bezier(.22,1,.36,1) .1s both;transition:all .3s}
         .hero-badge:hover{border-color:var(--accent);transform:translateY(-1px)}
         .hero-badge .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s ease infinite}
-        .hero-title{font-size:clamp(3rem,8vw,5.5rem);font-weight:900;letter-spacing:-3px;line-height:1.08;margin-bottom:18px;background:linear-gradient(135deg,#111827 0%,#4b5563 50%,#111827 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeUp .6s cubic-bezier(.22,1,.36,1) .2s both,shimmer 6s ease infinite}
+        .hero-title{font-size:clamp(3rem,8vw,5.5rem);font-weight:900;letter-spacing:-3px;line-height:1.08;margin-bottom:6px;background:linear-gradient(135deg,#111827 0%,#4b5563 50%,#111827 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeUp .6s cubic-bezier(.22,1,.36,1) .2s both,shimmer 6s ease infinite}
+        .hero-subtitle{font-size:1.8rem;font-weight:400;color:var(--muted);letter-spacing:8px;margin-bottom:20px;animation:fadeUp .6s cubic-bezier(.22,1,.36,1) .25s both}
         .hero-sub{font-size:1.3rem;color:var(--muted);margin-bottom:44px;font-weight:300;letter-spacing:2px;height:2rem;animation:fadeUp .6s cubic-bezier(.22,1,.36,1) .3s both}
         .cursor{color:var(--accent);animation:blink 1s step-end infinite}
         @keyframes blink{50%{opacity:0}}
@@ -72,14 +76,12 @@
         .btn-secondary:hover{border-color:#c4b5fd;color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 16px rgba(139,92,246,.08)}
         .btn-secondary:active{transform:translateY(0)}
 
-        /* 数据统计 */
         .stats{position:relative;z-index:10;max-width:720px;margin:50px auto 0;padding:0 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;text-align:center;animation:fadeUp .6s cubic-bezier(.22,1,.36,1) .5s both}
         .stat-item{padding:16px;border-radius:14px;transition:all .3s cubic-bezier(.22,1,.36,1)}
         .stat-item:hover{background:rgba(139,92,246,.04);transform:translateY(-2px)}
         .stat-item h4{font-size:2rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--accent),#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .stat-item p{font-size:.82rem;color:var(--muted);margin-top:4px}
 
-        /* 特性卡片 */
         .features{position:relative;z-index:10;max-width:1100px;margin:50px auto 0;padding:0 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
         .feat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 22px;transition:all .35s cubic-bezier(.22,1,.36,1);animation:fadeUp .6s cubic-bezier(.22,1,.36,1) both}
         .feat-card:nth-child(1){animation-delay:.55s}
@@ -92,7 +94,6 @@
         .feat-card h3{font-size:.95rem;font-weight:700;margin-bottom:8px}
         .feat-card p{font-size:.84rem;color:var(--muted);line-height:1.65}
 
-        /* 底部 */
         .bottom{padding:40px 20px;text-align:center;position:relative;z-index:10;animation:fadeUp .6s cubic-bezier(.22,1,.36,1) .9s both}
         .pills{display:flex;gap:10px;justify-content:center;margin-bottom:30px;flex-wrap:wrap}
         .pill{background:#fff;border:1px solid var(--border);padding:6px 14px;border-radius:30px;font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:6px;font-weight:500;transition:all .3s cubic-bezier(.22,1,.36,1)}
@@ -123,50 +124,54 @@
     <header class="nav">
         <a href="index.html" class="nav-logo"><img src="logo.png" alt="AnPin AI" class="logo-img"> AnPin AI</a>
         <nav class="nav-links">
-            <a href="index.html" class="active"><span class="dot-green"></span> 首页</a>
-            <a href="pricing.html">模型广场</a>
-            <a href="tutorial.html">教程</a>
-            <a href="docs.html">文档</a>
+            <a href="index.html" class="active"><span class="dot-green"></span> <span class="zh">首页</span><span class="en">Home</span></a>
+            <a href="pricing.html"><span class="zh">模型广场</span><span class="en">Models</span></a>
+            <a href="tutorial.html"><span class="zh">教程</span><span class="en">Tutorial</span></a>
+            <a href="docs.html"><span class="zh">文档</span><span class="en">Docs</span></a>
         </nav>
-        <a href="https://anpin.ai/login?redirect=/logen" class="btn-console" target="_top">控制台 ↗</a>
+        <div class="nav-right">
+            <button class="lang-btn" onclick="toggleLang()"><span class="zh">EN</span><span class="en">中文</span></button>
+            <a href="https://anpin.ai/login?redirect=/logen" class="btn-console" target="_top"><span class="zh">控制台 ↗</span><span class="en">Console ↗</span></a>
+        </div>
     </header>
 
     <main class="hero">
-        <div class="hero-badge"><span class="badge-dot"></span> AI API Gateway · 全球加速</div>
+        <div class="hero-badge"><span class="badge-dot"></span> <span class="zh">AI API Gateway · 全球加速</span><span class="en">AI API Gateway · Global Acceleration</span></div>
         <h1 class="hero-title">AnPin AI</h1>
+        <p class="hero-subtitle">安品AI</p>
         <div class="hero-sub"><span id="tw"></span><span class="cursor">|</span></div>
         <div class="hero-btns">
-            <a href="https://anpin.ai/login?redirect=/logen" class="btn-main" target="_top">进入控制台 &rarr;</a>
-            <a href="docs.html" class="btn-secondary">查看文档</a>
+            <a href="https://anpin.ai/login?redirect=/logen" class="btn-main" target="_top"><span class="zh">进入控制台 &rarr;</span><span class="en">Console &rarr;</span></a>
+            <a href="docs.html" class="btn-secondary"><span class="zh">查看文档</span><span class="en">View Docs</span></a>
         </div>
     </main>
 
     <section class="stats">
-        <div class="stat-item"><h4>10+</h4><p>可用模型</p></div>
-        <div class="stat-item"><h4>99.9%</h4><p>服务可用性</p></div>
-        <div class="stat-item"><h4>&lt;200ms</h4><p>平均延迟</p></div>
+        <div class="stat-item"><h4 data-target="10" data-suffix="+">0</h4><p><span class="zh">可用模型</span><span class="en">Available Models</span></p></div>
+        <div class="stat-item"><h4 data-target="99.9" data-suffix="%" data-decimal="1">0%</h4><p><span class="zh">服务可用性</span><span class="en">Uptime</span></p></div>
+        <div class="stat-item"><h4 data-prefix="<" data-target="200" data-suffix="ms">0ms</h4><p><span class="zh">平均延迟</span><span class="en">Avg Latency</span></p></div>
     </section>
 
     <section class="features">
         <div class="feat-card">
             <div class="feat-icon" style="background:#f0fdf4;color:#16a34a">⚡</div>
-            <h3>极速响应</h3>
-            <p>全球多节点部署，智能路由选择最优线路，确保 API 调用毫秒级响应。</p>
+            <h3><span class="zh">极速响应</span><span class="en">Fast Response</span></h3>
+            <p><span class="zh">全球多节点部署，智能路由选择最优线路，确保 API 调用毫秒级响应。</span><span class="en">Multi-node global deployment with intelligent routing for millisecond-level API response.</span></p>
         </div>
         <div class="feat-card">
             <div class="feat-icon" style="background:#eff6ff;color:#2563eb">🔗</div>
-            <h3>多模型聚合</h3>
-            <p>一个 API Key 接入 Claude、GPT、Gemini、DeepSeek 等主流大模型。</p>
+            <h3><span class="zh">多模型聚合</span><span class="en">Multi-Model</span></h3>
+            <p><span class="zh">一个 API Key 接入 Claude、GPT、Gemini、DeepSeek 等主流大模型。</span><span class="en">Access Claude, GPT, Gemini, DeepSeek and more with a single API Key.</span></p>
         </div>
         <div class="feat-card">
             <div class="feat-icon" style="background:#fef3c7;color:#d97706">🛡️</div>
-            <h3>高可用保障</h3>
-            <p>智能负载均衡与故障自动切换，服务可用性 99.9% 以上。</p>
+            <h3><span class="zh">高可用保障</span><span class="en">High Availability</span></h3>
+            <p><span class="zh">智能负载均衡与故障自动切换，服务可用性 99.9% 以上。</span><span class="en">Smart load balancing with automatic failover, 99.9%+ uptime guarantee.</span></p>
         </div>
         <div class="feat-card">
             <div class="feat-icon" style="background:#f5f3ff;color:#7c3aed">📊</div>
-            <h3>透明计费</h3>
-            <p>按实际用量计费，详细的用量报表与实时余额提醒，消费一目了然。</p>
+            <h3><span class="zh">透明计费</span><span class="en">Transparent Billing</span></h3>
+            <p><span class="zh">按实际用量计费，详细的用量报表与实时余额提醒，消费一目了然。</span><span class="en">Pay-as-you-go pricing with detailed usage reports and real-time balance alerts.</span></p>
         </div>
     </section>
 
@@ -178,28 +183,78 @@
             <div class="pill"><span style="color:#8b5cf6">●</span> DeepSeek</div>
         </div>
         <footer class="footer">
-            <div>&copy; 2026 AnPin AI. 保留所有权利.</div>
+            <div>&copy; 2026 AnPin AI. <span class="zh">保留所有权利.</span><span class="en">All rights reserved.</span></div>
             <div class="footer-links">
-                <a href="docs.html">文档</a>
-                <a href="terms.html">服务条款</a>
-                <a href="privacy.html">隐私政策</a>
-                <a href="policy.html">使用政策</a>
+                <a href="docs.html"><span class="zh">文档</span><span class="en">Docs</span></a>
+                <a href="terms.html"><span class="zh">服务条款</span><span class="en">Terms</span></a>
+                <a href="privacy.html"><span class="zh">隐私政策</span><span class="en">Privacy</span></a>
+                <a href="policy.html"><span class="zh">使用政策</span><span class="en">Policy</span></a>
             </div>
         </footer>
     </div>
 </div>
 
 <script>
-const words=["代码洪流，无畏挑战","智能负载，极致稳定","聚合全球，一站接入"];
+let lang=localStorage.getItem('anpin-lang')||'zh';
+document.documentElement.setAttribute('data-lang',lang);
+
+function toggleLang(){
+    lang=lang==='zh'?'en':'zh';
+    localStorage.setItem('anpin-lang',lang);
+    document.documentElement.setAttribute('data-lang',lang);
+    i=0;j=0;del=false;
+}
+
+const wordsZh=["安品AI让连接更可靠"];
+const wordsEn=["AnPin AI Makes Connections More Reliable"];
 let i=0,j=0,del=false;
 function tick(){
-    const w=words[i];
+    const words=lang==='zh'?wordsZh:wordsEn;
+    const w=words[i%words.length];
     document.getElementById("tw").textContent=w.substring(0,del?--j:++j);
     if(!del&&j===w.length){del=true;setTimeout(tick,2000);return}
     if(del&&j===0){del=false;i=(i+1)%words.length;setTimeout(tick,400);return}
     setTimeout(tick,del?40:120);
 }
 document.addEventListener("DOMContentLoaded",()=>setTimeout(tick,600));
+
+const statsObserver=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+        if(entry.isIntersecting){
+            animateStats();
+            statsObserver.unobserve(entry.target);
+        }
+    });
+},{threshold:0.3});
+
+document.addEventListener("DOMContentLoaded",()=>{
+    const s=document.querySelector('.stats');
+    if(s)statsObserver.observe(s);
+});
+
+function animateStats(){
+    document.querySelectorAll('.stat-item h4').forEach(el=>{
+        const target=parseFloat(el.dataset.target);
+        const suffix=el.dataset.suffix||'';
+        const prefix=el.dataset.prefix||'';
+        const decimal=parseInt(el.dataset.decimal)||0;
+        const duration=1500;
+        const start=performance.now();
+        function update(now){
+            const elapsed=now-start;
+            const progress=Math.min(elapsed/duration,1);
+            const eased=1-Math.pow(1-progress,3);
+            const current=target*eased;
+            if(decimal>0){
+                el.textContent=prefix+current.toFixed(decimal)+suffix;
+            }else{
+                el.textContent=prefix+Math.floor(current)+suffix;
+            }
+            if(progress<1)requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+    });
+}
 </script>
 </body>
 </html>
