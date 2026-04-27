@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Playground - AnPin AI</title>
+    <style>
+        :root{--bg:#fafafa;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--accent:#8b5cf6;--accent-2:#6d28d9;--card:#fff;--success:#10b981;--error:#ef4444}
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;padding:24px 20px}
+
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+        .container{max-width:1240px;margin:0 auto;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both}
+        .header{text-align:center;margin-bottom:24px;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) .05s both}
+        .header h1{font-size:2rem;font-weight:800;letter-spacing:-1.2px;margin-bottom:6px;background:linear-gradient(135deg,#111827,#6d28d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .header p{color:var(--muted);font-size:.9rem}
+
+        .mode-tabs{display:flex;gap:6px;justify-content:center;margin-bottom:24px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:5px;width:fit-content;margin-left:auto;margin-right:auto;box-shadow:0 2px 12px rgba(0,0,0,.03);animation:fadeUp .5s cubic-bezier(.22,1,.36,1) .1s both}
+        .mode-btn{padding:9px 22px;border:none;border-radius:10px;background:transparent;color:var(--muted);font-size:.86rem;font-weight:600;cursor:pointer;transition:all .3s cubic-bezier(.22,1,.36,1);font-family:inherit;display:flex;align-items:center;gap:7px}
+        .mode-btn svg{width:16px;height:16px}
+        .mode-btn:hover{color:var(--text)}
+        .mode-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 4px 12px rgba(139,92,246,.25)}
+
+        .main{display:grid;grid-template-columns:340px 1fr;gap:20px;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) .15s both}
+        .sidebar,.output{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;transition:box-shadow .3s}
+        .sidebar{height:fit-content;position:sticky;top:20px}
+
+        .form-group{margin-bottom:16px}
+        .form-group label{display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;margin-bottom:7px;color:#374151;text-transform:uppercase;letter-spacing:.5px}
+        .form-group label .req{color:#ef4444}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:10px;font-size:.86rem;font-family:inherit;transition:all .25s;background:#fafbfc}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(139,92,246,.1)}
+        .form-group textarea{resize:vertical;min-height:90px;line-height:1.6}
+        .form-group select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+
+        .btn-generate{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border:none;border-radius:11px;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .35s cubic-bezier(.22,1,.36,1);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;position:relative;overflow:hidden}
+        .btn-generate::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#a78bfa,var(--accent));opacity:0;transition:opacity .35s}
+        .btn-generate:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(139,92,246,.35)}
+        .btn-generate:hover::before{opacity:1}
+        .btn-generate>*{position:relative;z-index:1}
+        .btn-generate:disabled{opacity:.6;cursor:not-allowed;transform:none}
+        .btn-generate svg{width:16px;height:16px}
+
+        .btn-clear{width:100%;padding:9px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .25s;font-family:inherit;margin-top:8px}
+        .btn-clear:hover{border-color:#ef4444;color:#ef4444}
+
+        .output{min-height:560px;display:flex;flex-direction:column}
+        .output-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--muted);text-align:center;padding:40px 20px}
+        .output-empty .icon-wrap{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(109,40,217,.05));display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+        .output-empty .icon-wrap svg{width:36px;height:36px;color:var(--accent)}
+        .output-empty h3{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:6px}
+        .output-empty p{font-size:.86rem;line-height:1.6;max-width:340px}
+
+        .output-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid var(--border)}
+        .output-header h3{font-size:.95rem;font-weight:700}
+        .output-header .badge{font-size:.72rem;background:#f3f4f6;color:var(--muted);padding:3px 10px;border-radius:20px;font-weight:600}
+
+        .chat-messages{display:flex;flex-direction:column;gap:14px;flex:1;overflow-y:auto;padding-right:4px}
+        .message{display:flex;gap:10px;animation:fadeUp .35s cubic-bezier(.22,1,.36,1)}
+        .message.user{flex-direction:row-reverse}
+        .message-avatar{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.74rem;flex-shrink:0;letter-spacing:.5px}
+        .message.assistant .message-avatar{background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 4px 10px rgba(139,92,246,.25)}
+        .message.user .message-avatar{background:linear-gradient(135deg,#374151,#111827)}
+        .message-content{padding:11px 15px;border-radius:13px;max-width:75%;font-size:.88rem;line-height:1.65;word-break:break-word;white-space:pre-wrap}
+        .message.assistant .message-content{background:#f9fafb;border:1px solid var(--border);color:#1f2937;border-top-left-radius:4px}
+        .message.user .message-content{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border-top-right-radius:4px;box-shadow:0 4px 12px rgba(139,92,246,.2)}
+        .message-content .cursor{display:inline-block;width:7px;height:14px;background:var(--accent);animation:pulse 1s infinite;vertical-align:text-bottom;margin-left:2px;border-radius:1px}
+
+        .image-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;flex:1;align-content:start}
+        .image-item{border-radius:14px;overflow:hidden;border:1px solid var(--border);animation:fadeUp .4s cubic-bezier(.22,1,.36,1);background:#f9fafb;position:relative;transition:all .3s}
+        .image-item:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.08);border-color:#c4b5fd}
+        .image-item img{width:100%;display:block;height:auto}
+        .image-skeleton{aspect-ratio:1;background:linear-gradient(135deg,#f3f4f6,#e5e7eb,#f3f4f6);background-size:200% 200%;animation:shimmer 1.5s infinite;border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.84rem}
+        @keyframes shimmer{0%{background-position:0% 0%}100%{background-position:200% 200%}}
+
+        .loading-bubble{display:inline-flex;gap:4px;padding:4px 0}
+        .loading-bubble span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:bounce 1.4s infinite}
+        .loading-bubble span:nth-child(2){animation-delay:.2s}
+        .loading-bubble span:nth-child(3){animation-delay:.4s}
+        @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+
+        .error{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:11px 14px;border-radius:10px;font-size:.82rem;margin-top:12px;line-height:1.55;animation:fadeIn .3s}
+        .error strong{display:block;margin-bottom:3px;font-weight:700}
+
+        .file-upload{position:relative}
+        .file-upload input[type="file"]{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;top:0;left:0}
+        .file-upload-label{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 12px;border:2px dashed var(--border);border-radius:10px;background:#fafbfc;cursor:pointer;transition:all .3s;font-size:.82rem;color:var(--muted)}
+        .file-upload-label:hover{border-color:var(--accent);color:var(--accent);background:rgba(139,92,246,.03)}
+        .file-upload-label svg{width:22px;height:22px}
+        .file-preview{margin-top:10px;border-radius:10px;overflow:hidden;border:1px solid var(--border);position:relative}
+        .file-preview img{width:100%;display:block;max-height:180px;object-fit:cover}
+        .file-preview .remove{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+
+        .help-text{font-size:.74rem;color:var(--muted);margin-top:5px;line-height:1.5}
+        .help-text a{color:var(--accent);text-decoration:none;font-weight:600}
+        .help-text a:hover{text-decoration:underline}
+
+        .row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+        .provider-tag{display:inline-block;font-size:.66rem;padding:1px 6px;border-radius:4px;font-weight:600;margin-left:6px;vertical-align:middle}
+        .provider-tag.anthropic{background:#fef3c7;color:#92400e}
+        .provider-tag.openai{background:#dcfce7;color:#166534}
+
+        @media(max-width:900px){
+            .main{grid-template-columns:1fr}
+            .sidebar{position:static}
+        }
+        @media(max-width:600px){
+            body{padding:16px 12px}
+            .header h1{font-size:1.5rem}
+            .mode-btn{padding:8px 14px;font-size:.78rem}
+        }
+
+        .chat-messages::-webkit-scrollbar{width:6px}
+        .chat-messages::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+        .chat-messages::-webkit-scrollbar-thumb:hover{background:#9ca3af}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>AI Playground</h1>
+        <p>测试文本对话、文生图、图生图 — 全模型流式输出</p>
+    </div>
+
+    <div class="mode-tabs">
+        <button class="mode-btn active" data-mode="chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            文本对话
+        </button>
+        <button class="mode-btn" data-mode="text2img">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            文生图
+        </button>
+        <button class="mode-btn" data-mode="img2img">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            图生图
+        </button>
+    </div>
+
+    <div class="main">
+        <div class="sidebar">
+            <div class="form-group">
+                <label>API Key <span class="req">*</span></label>
+                <input type="password" id="apiKey" placeholder="sk-anpin-xxxx" autocomplete="off">
+                <div class="help-text">仅在浏览器本地存储，不会上传</div>
+            </div>
+
+            <div class="form-group">
+                <label>Base URL</label>
+                <input type="text" id="baseUrl" value="https://api.anpin.ai">
+            </div>
+
+            <div class="form-group">
+                <label>模型</label>
+                <select id="model"></select>
+            </div>
+
+            <div class="form-group" id="promptGroup">
+                <label id="promptLabel">消息</label>
+                <textarea id="prompt" placeholder="输入你的消息..."></textarea>
+            </div>
+
+            <div class="form-group" id="imageUploadGroup" style="display:none">
+                <label>上传图片 <span class="req">*</span></label>
+                <div class="file-upload">
+                    <input type="file" id="imageFile" accept="image/png,image/jpeg,image/webp" onchange="previewImage(this)">
+                    <div class="file-upload-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <span>点击或拖拽上传</span>
+                    </div>
+                </div>
+                <div id="imagePreview" class="file-preview" style="display:none"></div>
+            </div>
+
+            <div class="row-2" id="imageOptsGroup" style="display:none">
+                <div class="form-group" style="margin-bottom:0">
+                    <label>尺寸</label>
+                    <select id="size">
+                        <option value="1024x1024">1024×1024</option>
+                        <option value="1024x1792">1024×1792</option>
+                        <option value="1792x1024">1792×1024</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <label>数量</label>
+                    <select id="n">
+                        <option value="1">1 张</option>
+                        <option value="2">2 张</option>
+                        <option value="4">4 张</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top:18px">
+                <button class="btn-generate" id="btnGenerate" onclick="generate()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span>生成</span>
+                </button>
+                <button class="btn-clear" id="btnClear" onclick="clearOutput()">清空记录</button>
+            </div>
+            <div id="error"></div>
+        </div>
+
+        <div class="output">
+            <div class="output-empty" id="outputEmpty">
+                <div class="icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <h3>开始你的 AI 创作</h3>
+                <p>填写左侧 API Key，选择模型并输入提示词，立即体验流式 AI 生成</p>
+            </div>
+            <div id="chatBox" style="display:none;flex:1;flex-direction:column">
+                <div class="output-header">
+                    <h3>对话</h3>
+                    <span class="badge" id="modelBadge"></span>
+                </div>
+                <div class="chat-messages" id="chatOutput"></div>
+            </div>
+            <div id="imageBox" style="display:none;flex:1;flex-direction:column">
+                <div class="output-header">
+                    <h3>生成结果</h3>
+                    <span class="badge" id="modelBadgeImg"></span>
+                </div>
+                <div class="image-grid" id="imageOutput"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const MODELS={
+    chat:[
+        {id:'claude-opus-4-7',name:'Claude Opus 4.7',provider:'anthropic'},
+        {id:'claude-opus-4-6',name:'Claude Opus 4.6',provider:'anthropic'},
+        {id:'claude-sonnet-4-6',name:'Claude Sonnet 4.6',provider:'anthropic'},
+        {id:'claude-haiku-4-5-20251001',name:'Claude Haiku 4.5',provider:'anthropic'},
+        {id:'gpt-5.4',name:'GPT-5.4',provider:'openai'},
+        {id:'gpt-5.4-mini',name:'GPT-5.4 Mini',provider:'openai'},
+        {id:'gpt-5.2',name:'GPT-5.2',provider:'openai'},
+        {id:'gpt-5.2-codex',name:'GPT-5.2 Codex',provider:'openai'},
+        {id:'gpt-5.3-codex',name:'GPT-5.3 Codex',provider:'openai'}
+    ],
+    image:[
+        {id:'gpt-image-2',name:'GPT Image 2',provider:'openai'},
+        {id:'gpt-image-1',name:'GPT Image 1',provider:'openai'},
+        {id:'dall-e-3',name:'DALL·E 3',provider:'openai'}
+    ]
+};
+
+let currentMode='chat';
+let chatHistory=[];
+let abortController=null;
+
+const $=id=>document.getElementById(id);
+
+// 持久化 API Key 与 Base URL
+window.addEventListener('DOMContentLoaded',()=>{
+    const savedKey=localStorage.getItem('anpin-pg-key');
+    const savedUrl=localStorage.getItem('anpin-pg-url');
+    if(savedKey)$('apiKey').value=savedKey;
+    if(savedUrl)$('baseUrl').value=savedUrl;
+    document.querySelectorAll('.mode-btn').forEach(b=>{
+        b.addEventListener('click',()=>switchMode(b.dataset.mode,b));
+    });
+    switchMode('chat',document.querySelector('.mode-btn'));
+});
+$('apiKey')&&$('apiKey').addEventListener('change',e=>localStorage.setItem('anpin-pg-key',e.target.value));
+$('baseUrl')&&$('baseUrl').addEventListener('change',e=>localStorage.setItem('anpin-pg-url',e.target.value));
+
+function switchMode(mode,btn){
+    currentMode=mode;
+    document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+    if(btn)btn.classList.add('active');
+
+    const isChat=mode==='chat';
+    const isImg2Img=mode==='img2img';
+    const list=isChat?MODELS.chat:MODELS.image;
+
+    $('model').innerHTML=list.map(m=>`<option value="${m.id}" data-provider="${m.provider}">${m.name}</option>`).join('');
+    $('promptLabel').innerHTML=isChat?'消息 <span class="req">*</span>':'提示词 <span class="req">*</span>';
+    $('prompt').placeholder=isChat?'输入你的消息，按生成发送...':(isImg2Img?'描述如何编辑图片...':'描述你想生成的画面，越详细越好...');
+
+    $('imageUploadGroup').style.display=isImg2Img?'block':'none';
+    $('imageOptsGroup').style.display=isChat?'none':'grid';
+
+    if(isChat)showChatBox();else showImageBox();
+}
+
+function showEmpty(){
+    $('outputEmpty').style.display='flex';
+    $('chatBox').style.display='none';
+    $('imageBox').style.display='none';
+}
+function showChatBox(){
+    if(chatHistory.length===0){showEmpty();return;}
+    $('outputEmpty').style.display='none';
+    $('chatBox').style.display='flex';
+    $('imageBox').style.display='none';
+}
+function showImageBox(){
+    const hasImages=$('imageOutput').children.length>0;
+    if(!hasImages){showEmpty();return;}
+    $('outputEmpty').style.display='none';
+    $('chatBox').style.display='none';
+    $('imageBox').style.display='flex';
+}
+
+function previewImage(input){
+    const preview=$('imagePreview');
+    if(input.files&&input.files[0]){
+        const reader=new FileReader();
+        reader.onload=e=>{
+            preview.innerHTML=`<img src="${e.target.result}"><button class="remove" onclick="removeImage()">×</button>`;
+            preview.style.display='block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+function removeImage(){
+    $('imageFile').value='';
+    $('imagePreview').style.display='none';
+    $('imagePreview').innerHTML='';
+}
+
+function clearOutput(){
+    chatHistory=[];
+    $('chatOutput').innerHTML='';
+    $('imageOutput').innerHTML='';
+    $('error').innerHTML='';
+    showEmpty();
+    if(abortController){abortController.abort();abortController=null;}
+}
+
+function showError(title,msg){
+    $('error').innerHTML=`<div class="error"><strong>${title}</strong>${escapeHtml(msg)}</div>`;
+}
+function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+async function generate(){
+    const apiKey=$('apiKey').value.trim();
+    const baseUrl=$('baseUrl').value.trim().replace(/\/$/,'');
+    const model=$('model').value;
+    const prompt=$('prompt').value.trim();
+
+    $('error').innerHTML='';
+
+    if(!apiKey){showError('缺少 API Key','请先填写你的 API Key');return;}
+    if(!prompt){showError('缺少提示词','请输入提示词内容');return;}
+    if(currentMode==='img2img'&&!$('imageFile').files[0]){showError('缺少图片','请上传一张参考图片');return;}
+
+    localStorage.setItem('anpin-pg-key',apiKey);
+    localStorage.setItem('anpin-pg-url',baseUrl);
+
+    if(currentMode==='chat')await runChat(apiKey,baseUrl,model,prompt);
+    else await runImage(apiKey,baseUrl,model,prompt);
+}
+
+function setBtnLoading(loading){
+    const btn=$('btnGenerate');
+    btn.disabled=loading;
+    btn.innerHTML=loading
+        ?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="animation:spin 1s linear infinite"><circle cx="12" cy="12" r="9" stroke-dasharray="40 20"/></svg><span>生成中...</span>`
+        :`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>生成</span>`;
+}
+
+async function runChat(apiKey,baseUrl,model,prompt){
+    setBtnLoading(true);
+    const provider=MODELS.chat.find(m=>m.id===model)?.provider;
+    $('modelBadge').textContent=model;
+
+    chatHistory.push({role:'user',content:prompt});
+    renderChat();
+    $('prompt').value='';
+    showChatBox();
+
+    // 添加 assistant 占位
+    const assistantMsg={role:'assistant',content:''};
+    chatHistory.push(assistantMsg);
+    const idx=chatHistory.length-1;
+    renderChat();
+    const contentEl=document.querySelector(`#chatOutput .message[data-i="${idx}"] .message-content`);
+    contentEl.innerHTML='<div class="loading-bubble"><span></span><span></span><span></span></div>';
+
+    abortController=new AbortController();
+
+    try{
+        const isAnthropic=provider==='anthropic';
+        const url=isAnthropic?`${baseUrl}/v1/messages`:`${baseUrl}/openai/v1/chat/completions`;
+
+        const headers={'Content-Type':'application/json'};
+        if(isAnthropic){
+            headers['x-api-key']=apiKey;
+            headers['anthropic-version']='2023-06-01';
+            headers['anthropic-dangerous-direct-browser-access']='true';
+        }else{
+            headers['Authorization']=`Bearer ${apiKey}`;
+        }
+
+        // 移除占位 assistant 用于发送
+        const sendMessages=chatHistory.slice(0,-1);
+        const body=isAnthropic
+            ?{model,max_tokens:4096,messages:sendMessages,stream:true}
+            :{model,messages:sendMessages,stream:true};
+
+        const res=await fetch(url,{
+            method:'POST',
+            headers,
+            body:JSON.stringify(body),
+            signal:abortController.signal
+        });
+
+        if(!res.ok){
+            let errMsg=`HTTP ${res.status}`;
+            try{
+                const errData=await res.json();
+                errMsg=errData.error?.message||errData.message||JSON.stringify(errData);
+            }catch{
+                try{errMsg=await res.text();}catch{}
+            }
+            throw new Error(errMsg);
+        }
+
+        const reader=res.body.getReader();
+        const decoder=new TextDecoder();
+        let buf='';
+        let text='';
+        contentEl.innerHTML='';
+
+        while(true){
+            const{done,value}=await reader.read();
+            if(done)break;
+            buf+=decoder.decode(value,{stream:true});
+
+            let idxN;
+            while((idxN=buf.indexOf('\n'))>=0){
+                const line=buf.slice(0,idxN).trim();
+                buf=buf.slice(idxN+1);
+                if(!line.startsWith('data:'))continue;
+                const data=line.slice(5).trim();
+                if(data==='[DONE]')continue;
+
+                try{
+                    const json=JSON.parse(data);
+                    let delta='';
+                    if(isAnthropic){
+                        if(json.type==='content_block_delta'&&json.delta?.type==='text_delta'){
+                            delta=json.delta.text||'';
+                        }
+                    }else{
+                        delta=json.choices?.[0]?.delta?.content||'';
+                    }
+                    if(delta){
+                        text+=delta;
+                        contentEl.innerHTML=escapeHtml(text)+'<span class="cursor"></span>';
+                        const sc=$('chatOutput');
+                        sc.scrollTop=sc.scrollHeight;
+                    }
+                }catch(e){}
+            }
+        }
+
+        contentEl.innerHTML=escapeHtml(text);
+        assistantMsg.content=text;
+        if(!text)contentEl.innerHTML='<em style="color:var(--muted)">（无返回内容）</em>';
+    }catch(e){
+        if(e.name==='AbortError'){
+            contentEl.innerHTML='<em style="color:var(--muted)">已取消</em>';
+        }else{
+            contentEl.innerHTML=`<div class="error"><strong>请求失败</strong>${escapeHtml(e.message)}</div>`;
+            chatHistory.pop(); // 移除空的 assistant
+        }
+    }
+    setBtnLoading(false);
+    abortController=null;
+}
+
+function renderChat(){
+    const out=$('chatOutput');
+    out.innerHTML=chatHistory.map((m,i)=>`
+        <div class="message ${m.role}" data-i="${i}">
+            <div class="message-avatar">${m.role==='user'?'YOU':'AI'}</div>
+            <div class="message-content">${escapeHtml(m.content)||''}</div>
+        </div>
+    `).join('');
+    out.scrollTop=out.scrollHeight;
+}
+
+async function runImage(apiKey,baseUrl,model,prompt){
+    setBtnLoading(true);
+    const size=$('size').value;
+    const n=parseInt($('n').value);
+    $('modelBadgeImg').textContent=model;
+    showImageBox();
+    if($('imageOutput').children.length===0){
+        $('outputEmpty').style.display='none';
+        $('imageBox').style.display='flex';
+    }
+
+    // 添加 skeleton 占位
+    const skeletons=[];
+    for(let i=0;i<n;i++){
+        const sk=document.createElement('div');
+        sk.className='image-skeleton';
+        sk.textContent='生成中...';
+        $('imageOutput').prepend(sk);
+        skeletons.push(sk);
+    }
+
+    abortController=new AbortController();
+
+    try{
+        const isImg2Img=currentMode==='img2img';
+        const url=isImg2Img
+            ?`${baseUrl}/openai/v1/images/edits`
+            :`${baseUrl}/openai/v1/images/generations`;
+
+        let res;
+        if(isImg2Img){
+            const fd=new FormData();
+            fd.append('model',model);
+            fd.append('prompt',prompt);
+            fd.append('size',size);
+            fd.append('n',String(n));
+            fd.append('image',$('imageFile').files[0]);
+            res=await fetch(url,{
+                method:'POST',
+                headers:{'Authorization':`Bearer ${apiKey}`},
+                body:fd,
+                signal:abortController.signal
+            });
+        }else{
+            res=await fetch(url,{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'Authorization':`Bearer ${apiKey}`
+                },
+                body:JSON.stringify({model,prompt,size,n,response_format:'url'}),
+                signal:abortController.signal
+            });
+        }
+
+        if(!res.ok){
+            let errMsg=`HTTP ${res.status}`;
+            try{
+                const errData=await res.json();
+                errMsg=errData.error?.message||errData.message||JSON.stringify(errData);
+            }catch{
+                try{errMsg=await res.text();}catch{}
+            }
+            throw new Error(errMsg);
+        }
+
+        const data=await res.json();
+        skeletons.forEach(s=>s.remove());
+
+        if(data.data&&data.data.length>0){
+            data.data.forEach(img=>{
+                const div=document.createElement('div');
+                div.className='image-item';
+                const src=img.url||(img.b64_json?'data:image/png;base64,'+img.b64_json:'');
+                div.innerHTML=`<img src="${src}" loading="lazy">`;
+                $('imageOutput').prepend(div);
+            });
+        }else{
+            throw new Error('返回数据为空');
+        }
+    }catch(e){
+        skeletons.forEach(s=>s.remove());
+        if(e.name!=='AbortError'){
+            showError('生成失败',e.message);
+        }
+    }
+    setBtnLoading(false);
+    abortController=null;
+}
+
+// Enter 提交
+$('prompt')&&$('prompt').addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){
+        e.preventDefault();
+        generate();
+    }
+});
+</script>
+</body>
+</html>
