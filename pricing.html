@@ -125,7 +125,7 @@
         <div class="stats-row">
             <div class="stat-card">
                 <div class="stat-icon total"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
-                <div><div class="stat-label"><span class="zh">模型总数</span><span class="en">Total Models</span></div><div class="stat-value" id="total-count">11</div></div>
+                <div><div class="stat-label"><span class="zh">模型总数</span><span class="en">Total Models</span></div><div class="stat-value" id="total-count">13</div></div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon anthropic"><svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M15.17 2.5h3.41L23 21.5h-3.63l-1.1-3.6h-5.36L11.81 21.5H8.18l6.99-19zm1.58 5.22l-1.93 5.96h3.82l-1.89-5.96z"/><path d="M5.99 2.5h3.42L3.78 21.5H.35L5.99 2.5z"/></svg></div>
@@ -133,7 +133,7 @@
             </div>
             <div class="stat-card">
                 <div class="stat-icon openai"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.28 9.82a5.99 5.99 0 0 0-.52-4.91 6.05 6.05 0 0 0-6.51-2.9A6.07 6.07 0 0 0 4.98 4.18 6 6 0 0 0 .99 7.08a6.04 6.04 0 0 0 .74 7.1 5.98 5.98 0 0 0 .51 4.91 6.05 6.05 0 0 0 6.52 2.9 5.99 5.99 0 0 0 4.5 2.01 6.06 6.06 0 0 0 5.77-4.21 5.99 5.99 0 0 0 4-2.9 6.06 6.06 0 0 0-.75-7.07zM13.26 22.43a4.48 4.48 0 0 1-2.88-1.04l.14-.08 4.78-2.76a.8.8 0 0 0 .39-.68v-6.74l2.02 1.17a.07.07 0 0 1 .04.05v5.58a4.5 4.5 0 0 1-4.49 4.5zM3.6 18.3a4.47 4.47 0 0 1-.54-3.01l.14.08 4.78 2.76a.77.77 0 0 0 .78 0l5.84-3.37v2.33a.08.08 0 0 1-.03.06l-4.84 2.79a4.5 4.5 0 0 1-6.13-1.64zM2.34 7.9a4.49 4.49 0 0 1 2.37-1.97V11.6a.77.77 0 0 0 .39.68l5.81 3.35-2.02 1.17a.08.08 0 0 1-.07 0L4 14.01a4.5 4.5 0 0 1-1.66-6.11zm16.6 3.85l-5.83-3.39L15.13 7.2a.08.08 0 0 1 .07 0l4.83 2.79a4.49 4.49 0 0 1-.68 8.1V12.43a.79.79 0 0 0-.41-.68zm2.01-3.02l-.14-.09-4.77-2.78a.78.78 0 0 0-.79 0l-5.84 3.37V6.9a.07.07 0 0 1 .03-.06l4.83-2.79a4.5 4.5 0 0 1 6.68 4.66zM8.31 12.86l-2.02-1.16a.08.08 0 0 1-.04-.06V6.08a4.5 4.5 0 0 1 7.38-3.45l-.14.08L8.71 5.47a.8.8 0 0 0-.39.68l-.01 6.71zm1.1-2.37l2.6-1.5 2.6 1.5v3l-2.6 1.5-2.6-1.5z"/></svg></div>
-                <div><div class="stat-label">OPENAI</div><div class="stat-value" id="openai-count">5</div></div>
+                <div><div class="stat-label">OPENAI</div><div class="stat-value" id="openai-count">7</div></div>
             </div>
         </div>
 
@@ -146,7 +146,7 @@
 
         <div class="filter-tabs" id="filters">
             <div class="filter-tab active" onclick="setFilter('all',this)">
-                <span class="zh">全部</span><span class="en">All</span> <span class="count" id="tab-all">11</span>
+                <span class="zh">全部</span><span class="en">All</span> <span class="count" id="tab-all">13</span>
             </div>
             <div class="filter-tab" onclick="setFilter('anthropic',this)">
                 <span class="f-icon f-anthropic"><svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M15.17 2.5h3.41L23 21.5h-3.63l-1.1-3.6h-5.36L11.81 21.5H8.18l6.99-19zm1.58 5.22l-1.93 5.96h3.82l-1.89-5.96z"/><path d="M5.99 2.5h3.42L3.78 21.5H.35L5.99 2.5z"/></svg></span> Anthropic <span class="count" id="tab-anthropic">6</span>
@@ -189,11 +189,13 @@ const models=[
     {name:"claude-opus-4-7",platform:"anthropic",input:5.00,output:25.00,cache_write:6.25,cache_read:0.500},
     {name:"claude-sonnet-4-5-20250929",platform:"anthropic",input:3.00,output:15.00,cache_write:3.75,cache_read:0.300},
     {name:"claude-sonnet-4-6",platform:"anthropic",input:3.00,output:15.00,cache_write:3.75,cache_read:0.300},
+    {name:"gpt-5.5",platform:"openai",input:5.00,output:20.00,cache_write:0,cache_read:1.250},
+    {name:"gpt-5.4",platform:"openai",input:2.50,output:15.00,cache_write:0,cache_read:0.250},
+    {name:"gpt-5.4-mini",platform:"openai",input:0.750,output:4.50,cache_write:0,cache_read:0.075},
     {name:"gpt-5.2",platform:"openai",input:1.75,output:14.00,cache_write:0,cache_read:0.175},
     {name:"gpt-5.2-codex",platform:"openai",input:1.75,output:14.00,cache_write:0,cache_read:0.175},
     {name:"gpt-5.3-codex",platform:"openai",input:1.75,output:14.00,cache_write:0,cache_read:0.175},
-    {name:"gpt-5.4",platform:"openai",input:2.50,output:15.00,cache_write:0,cache_read:0.250},
-    {name:"gpt-5.4-mini",platform:"openai",input:0.750,output:4.50,cache_write:0,cache_read:0.075},
+    {name:"gpt-image-2",platform:"openai",input:0.1,output:0.1,cache_write:0,cache_read:2.000},
 ];
 
 let currentFilter='all';
