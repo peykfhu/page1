@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>倍率价格表 - AnPin AI</title>
+    <title>Rate Pricing Table - AnPin AI</title>
     <style>
         :root{--bg:#f8fafc;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--accent:#8b5cf6;--card:#fff}
         *{margin:0;padding:0;box-sizing:border-box}
@@ -11,9 +11,14 @@
         @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
         .container{max-width:1440px;margin:0 auto}
-        .page-header{margin-bottom:24px;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both}
+        .page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:24px;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both}
+        .header-copy{min-width:0}
         .page-header h1{font-size:1.3rem;font-weight:800;letter-spacing:-.5px;margin-bottom:4px}
         .page-header p{font-size:.82rem;color:var(--muted)}
+        .lang-toggle{display:inline-flex;align-items:center;gap:3px;padding:3px;border:1px solid var(--border);border-radius:8px;background:var(--card);box-shadow:0 3px 14px rgba(15,23,42,.04);flex-shrink:0}
+        .lang-btn{border:0;background:transparent;color:var(--muted);font:inherit;font-size:.74rem;font-weight:800;line-height:1;padding:7px 10px;border-radius:6px;cursor:pointer;transition:all .18s ease}
+        .lang-btn:hover{color:var(--text);background:#f9fafb}
+        .lang-btn.active{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(139,92,246,.24)}
 
         .group-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:28px;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) .05s both}
         .group-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;transition:all .3s cubic-bezier(.22,1,.36,1)}
@@ -60,6 +65,8 @@
 
         @media(max-width:768px){
             body{padding:16px 14px}
+            .page-header{align-items:stretch;flex-direction:column}
+            .lang-toggle{align-self:flex-start}
             .group-grid{grid-template-columns:1fr}
             .price-table th,.price-table td{padding:6px 8px;font-size:.72rem}
         }
@@ -68,18 +75,24 @@
 <body>
 <div class="container">
     <div class="page-header">
-        <h1>分组倍率价格表</h1>
-        <p>基于官方价格的不同分组倍率，含输入/输出/缓存写入/缓存读取，价格单位 $/M tokens</p>
+        <div class="header-copy">
+            <h1 data-i18n="pageTitle">倍率价格表</h1>
+            <p data-i18n="pageDesc">价格基于官方模型价格计算。单位：$/百万 tokens，包含输入、输出、缓存写入和缓存读取。</p>
+        </div>
+        <div class="lang-toggle" aria-label="Language switch">
+            <button class="lang-btn active" type="button" data-lang="zh">中文</button>
+            <button class="lang-btn" type="button" data-lang="en">EN</button>
+        </div>
     </div>
 
     <div class="group-grid" id="group-cards"></div>
 
-    <div class="section-title">Claude 模型价格对照（含缓存）</div>
+    <div class="section-title" data-i18n="claudeTitle">Claude 模型价格对比（含缓存）</div>
     <div class="table-wrap">
         <table class="price-table" id="table-claude"></table>
     </div>
 
-    <div class="section-title">GPT 模型价格对照（含缓存）</div>
+    <div class="section-title" data-i18n="gptTitle">GPT 模型价格对比（含缓存）</div>
     <div class="table-wrap">
         <table class="price-table" id="table-gpt"></table>
     </div>
@@ -89,6 +102,9 @@
 
 <script>
 var claudeModels = [
+    {name:"claude-fable-5", input:10.00, output:50.00, cache_write:12.50, cache_read:1.00},
+    {name:"claude-mythos-5", input:10.00, output:50.00, cache_write:12.50, cache_read:1.00},
+    {name:"claude-opus-4-8", input:5.00, output:25.00, cache_write:6.25, cache_read:0.50},
     {name:"claude-sonnet-4-6", input:3.00, output:15.00, cache_write:3.75, cache_read:0.30},
     {name:"claude-sonnet-4-5-20250929", input:3.00, output:15.00, cache_write:3.75, cache_read:0.30},
     {name:"claude-opus-4-7", input:5.00, output:25.00, cache_write:6.25, cache_read:0.50},
@@ -107,56 +123,126 @@ var gptModels = [
     {name:"gpt-image-2", input:0.10, output:0.10, cache_write:0, cache_read:2.00},
 ];
 
+var lang = localStorage.getItem('pricingTableLang') || localStorage.getItem('anpin-lang') || 'zh';
+if (!['zh', 'en'].includes(lang)) lang = 'zh';
+
+var i18n = {
+    zh: {
+        title: "倍率价格表 - AnPin AI",
+        pageTitle: "倍率价格表",
+        pageDesc: "价格基于官方模型价格计算。单位：$/百万 tokens，包含输入、输出、缓存写入和缓存读取。",
+        claudeTitle: "Claude 模型价格对比（含缓存）",
+        gptTitle: "GPT 模型价格对比（含缓存）",
+        model: "模型",
+        type: "类型",
+        officialPrice: "官方价格",
+        input: "输入",
+        output: "输出",
+        cacheWrite: "缓存写入",
+        cacheRead: "缓存读取",
+        notesTitle: "倍率说明",
+        noteRate: "倍率 = 实际成本 / 官方标准价格。例如，0.15x 表示官方价格的 15%。",
+        noteGpt: "0.15x 适用于部分 GPT 模型。",
+        noteClaude: "0.4x / 0.6x / 0.7x / 1.2x / 1.6x / 2x 为 Claude 接入通道。",
+        noteCache: "缓存写入在写入缓存时计费；缓存读取在命中缓存时计费。",
+        noteBilling: "实际计费以平台控制台展示价格为准。",
+        groups: {
+            gpt015: {name: "gpt5.5 和 gpt-image-2", desc: "部分 GPT 模型的低倍率通道"},
+            claude04: {name: "Claude 反代通道", desc: "经济型 Claude 接入通道"},
+            claude06: {name: "小池子", desc: "稳定 Claude 接入池"},
+            claude07: {name: "Claude 低延迟通道", desc: "低延迟，高缓存命中率"},
+            claude12: {name: "Claude 高级通道", desc: "高级 Claude 接入通道"},
+            claude16: {name: "Claude 优先通道", desc: "优先级 Claude 接入通道"},
+            claude20: {name: "Claude 专属 max 池", desc: "专属高容量 Claude 资源池"}
+        }
+    },
+    en: {
+        title: "Rate Pricing Table - AnPin AI",
+        pageTitle: "Grouped Rate Pricing Table",
+        pageDesc: "Rates are based on official model prices. Unit: $/M tokens for input, output, cache write, and cache read.",
+        claudeTitle: "Claude model price comparison with cache",
+        gptTitle: "GPT model price comparison with cache",
+        model: "Model",
+        type: "Type",
+        officialPrice: "Official Price",
+        input: "Input",
+        output: "Output",
+        cacheWrite: "Cache Write",
+        cacheRead: "Cache Read",
+        notesTitle: "Rate notes",
+        noteRate: "Rate = actual cost / official standard price. For example, 0.15x means 15% of official price.",
+        noteGpt: "0.15x is for selected GPT models.",
+        noteClaude: "0.4x / 0.6x / 0.7x / 1.2x / 1.6x / 2x are Claude access channels.",
+        noteCache: "Cache Write is charged when writing cache; Cache Read is charged on cache hits.",
+        noteBilling: "Actual billing follows the price shown in the platform console.",
+        groups: {
+            gpt015: {name: "gpt5.5 and gpt-image-2", desc: "Low-rate channel for selected GPT models"},
+            claude04: {name: "Claude reverse channel", desc: "Economy Claude access channel"},
+            claude06: {name: "Small pool", desc: "Stable Claude access pool"},
+            claude07: {name: "Low-latency Claude channel", desc: "Low latency with a high cache hit rate"},
+            claude12: {name: "Premium Claude channel", desc: "Premium Claude access channel"},
+            claude16: {name: "Priority Claude channel", desc: "Priority Claude access channel"},
+            claude20: {name: "Dedicated Claude max pool", desc: "Dedicated high-capacity Claude resource pool"}
+        }
+    }
+};
+
 var groups = [
     {
+        id: "gpt015",
         rate: 0.15,
-        name: "gpt5.5 and gpt-image-2",
         scope: "gpt",
-        tag: "GPT 专属",
+        tag: "GPT",
         tagCss: "tag-gpt",
-        css: "t-low",
-        desc: "GPT 模型专属超低价通道",
-        formula: "实际 $55.34 ÷ 标准 $381.57 = 0.145 ≈ 0.15x"
+        css: "t-low"
     },
     {
+        id: "claude04",
         rate: 0.4,
-        name: "cc逆向",
         scope: "claude",
         tag: "Claude",
         tagCss: "tag-claude",
-        css: "t-low",
-        desc: "Claude 逆向通道，经济实惠",
-        formula: "实际 $64.88 ÷ 标准 $162.19 = 0.40x"
+        css: "t-low"
     },
     {
+        id: "claude06",
         rate: 0.6,
-        name: "小血池",
         scope: "claude",
         tag: "Claude",
         tagCss: "tag-claude",
-        css: "t-mid",
-        desc: "小血池通道，稳定可靠",
-        formula: "实际 $2.15 ÷ 标准 $3.69 = 0.58 ≈ 0.6x"
+        css: "t-mid"
     },
     {
+        id: "claude07",
         rate: 0.7,
-        name: "cc逆向低延迟高缓存",
         scope: "claude",
         tag: "Claude",
         tagCss: "tag-claude",
-        css: "t-mid",
-        desc: "低延迟 + 高缓存命中率，性价比优选",
-        formula: "实际 $155.90 ÷ 标准 $229.97 = 0.678 ≈ 0.7x"
+        css: "t-mid"
     },
     {
-        rate: 2.0,
-        name: "自建号池满血cc_max",
+        id: "claude12",
+        rate: 1.2,
         scope: "claude",
         tag: "Claude",
         tagCss: "tag-claude",
-        css: "t-high",
-        desc: "自建号池满血版，最高质量独享资源",
-        formula: "实际 $159.33 ÷ 标准 $79.67 = 2.0x"
+        css: "t-high"
+    },
+    {
+        id: "claude16",
+        rate: 1.6,
+        scope: "claude",
+        tag: "Claude",
+        tagCss: "tag-claude",
+        css: "t-high"
+    },
+    {
+        id: "claude20",
+        rate: 2.0,
+        scope: "claude",
+        tag: "Claude",
+        tagCss: "tag-claude",
+        css: "t-high"
     },
 ];
 
@@ -168,41 +254,44 @@ function priceStr(v) {
 }
 
 function renderGroupCards() {
+    var t = i18n[lang];
     var html = '';
     groups.forEach(function(g) {
+        var copy = t.groups[g.id];
         html += '<div class="group-card">' +
             '<div class="group-header"><span class="group-badge">' + g.rate + 'x</span><span class="group-tag ' + g.tagCss + '">' + g.tag + '</span></div>' +
-            '<div class="group-name">' + g.name + '</div>' +
-            '<div class="group-desc">' + g.desc + '</div>' +
+            '<div class="group-name">' + copy.name + '</div>' +
+            '<div class="group-desc">' + copy.desc + '</div>' +
         '</div>';
     });
     document.getElementById('group-cards').innerHTML = html;
 }
 
 function renderTable(tableId, models, platform) {
+    var t = i18n[lang];
     var applicableGroups = groups.filter(function(g) { return g.scope === platform || g.scope === 'all'; });
 
-    var thead = '<thead><tr><th class="col-model">模型</th><th>类型</th><th>官方价格</th>';
+    var thead = '<thead><tr><th class="col-model">' + t.model + '</th><th>' + t.type + '</th><th>' + t.officialPrice + '</th>';
     applicableGroups.forEach(function(g) {
-        thead += '<th>' + g.rate + 'x<br><span style="font-size:.62rem;font-weight:500;color:#9ca3af">' + g.name + '</span></th>';
+        thead += '<th>' + g.rate + 'x<br><span style="font-size:.62rem;font-weight:500;color:#9ca3af">' + t.groups[g.id].name + '</span></th>';
     });
     thead += '</tr></thead>';
 
     var tbody = '<tbody>';
     models.forEach(function(m) {
         var types = [
-            {label:'输入', val:m.input},
-            {label:'输出', val:m.output},
-            {label:'缓存写入', val:m.cache_write},
-            {label:'缓存读取', val:m.cache_read},
+            {key:'input', label:t.input, val:m.input},
+            {key:'output', label:t.output, val:m.output},
+            {key:'cacheWrite', label:t.cacheWrite, val:m.cache_write},
+            {key:'cacheRead', label:t.cacheRead, val:m.cache_read},
         ];
         var first = true;
         types.forEach(function(t) {
-            if (t.val === 0 && t.label === '缓存写入') return;
+            if (t.val === 0 && t.key === 'cacheWrite') return;
             tbody += '<tr>';
             if (first) {
                 var dotClass = platform === 'claude' ? 'dot-anthropic' : 'dot-openai';
-                tbody += '<td class="td-left" rowspan="' + types.filter(function(x){return !(x.val===0 && x.label==='缓存写入')}).length + '"><div class="model-name"><span class="provider-dot ' + dotClass + '"></span>' + m.name + '</div></td>';
+                tbody += '<td class="td-left" rowspan="' + types.filter(function(x){return !(x.val===0 && x.key==='cacheWrite')}).length + '"><div class="model-name"><span class="provider-dot ' + dotClass + '"></span>' + m.name + '</div></td>';
                 first = false;
             }
             tbody += '<td class="td-left" style="font-size:.74rem;color:var(--muted)">' + t.label + '</td>';
@@ -221,23 +310,42 @@ function renderTable(tableId, models, platform) {
 }
 
 function renderNote() {
+    var t = i18n[lang];
     document.getElementById('note-section').innerHTML =
-        '<strong>倍率说明</strong>' +
+        '<strong>' + t.notesTitle + '</strong>' +
         '<ul>' +
-        '<li><strong>倍率 = 实际消费 ÷ 官方标准价格</strong>。例如 0.15x 表示仅需官方价格的 15%</li>' +
-        '<li><strong>0.15x</strong> 为 GPT 模型专属通道（gpt-5.5、gpt-image-2 等）</li>' +
-        '<li><strong>0.4x / 0.6x / 0.7x / 2x</strong> 为 Claude 模型不同通道</li>' +
-        '<li>缓存写入（Cache Write）：首次写入缓存的费用；缓存读取（Cache Read）：命中缓存后的费用</li>' +
-        '<li>GPT 模型无缓存写入费用，仅有缓存读取</li>' +
-        '<li>实际扣费以平台显示为准，汇率 ¥1 = $1（平台内部结算）</li>' +
+        '<li><strong>' + t.noteRate + '</strong></li>' +
+        '<li><strong>' + t.noteGpt + '</strong></li>' +
+        '<li><strong>' + t.noteClaude + '</strong></li>' +
+        '<li>' + t.noteCache + '</li>' +
+        '<li>' + t.noteBilling + '</li>' +
         '</ul>';
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function applyLanguage(nextLang) {
+    lang = nextLang;
+    localStorage.setItem('pricingTableLang', lang);
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    document.title = i18n[lang].title;
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        el.textContent = i18n[lang][el.dataset.i18n];
+    });
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
     renderGroupCards();
     renderTable('table-claude', claudeModels, 'claude');
     renderTable('table-gpt', gptModels, 'gpt');
     renderNote();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            applyLanguage(btn.dataset.lang);
+        });
+    });
+    applyLanguage(lang);
 });
 </script>
 </body>
