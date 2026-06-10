@@ -13,9 +13,14 @@
 
         .container{max-width:1440px;margin:0 auto;padding:24px 28px}
 
-        .page-header{margin-bottom:22px;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both}
+        .page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:22px;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both}
+        .header-copy{min-width:0}
         .page-header h1{font-size:1.3rem;font-weight:800;letter-spacing:-.5px;margin-bottom:4px}
         .page-header p{font-size:.82rem;color:var(--muted)}
+        .lang-toggle{display:inline-flex;align-items:center;gap:3px;padding:3px;border:1px solid var(--border);border-radius:8px;background:var(--card);box-shadow:0 3px 14px rgba(15,23,42,.04);flex-shrink:0}
+        .lang-btn{border:0;background:transparent;color:var(--muted);font:inherit;font-size:.74rem;font-weight:800;line-height:1;padding:7px 10px;border-radius:6px;cursor:pointer;transition:all .18s ease}
+        .lang-btn:hover{color:var(--text);background:#f9fafb}
+        .lang-btn.active{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(139,92,246,.24)}
 
         .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;animation:fadeUp .5s cubic-bezier(.22,1,.36,1) .05s both}
         .stat-card{background:var(--card);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;border:1px solid var(--border);transition:all .3s cubic-bezier(.22,1,.36,1)}
@@ -87,6 +92,8 @@
         @media(max-width:900px){.model-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr}}
         @media(max-width:600px){
             .container{padding:16px 14px}
+            .page-header{align-items:stretch;flex-direction:column}
+            .lang-toggle{align-self:flex-start}
             .model-grid{grid-template-columns:1fr}
             .stats-row{grid-template-columns:1fr}
         }
@@ -95,8 +102,14 @@
 <body>
 <div class="container">
     <div class="page-header">
-        <h1>模型广场</h1>
-        <p>查看所有可用模型及定价，价格单位为 $/M tokens</p>
+        <div class="header-copy">
+            <h1 data-i18n="pageTitle">模型广场</h1>
+            <p data-i18n="pageDesc">查看所有可用模型及定价，价格单位为 $/M tokens</p>
+        </div>
+        <div class="lang-toggle" aria-label="Language switch">
+            <button class="lang-btn active" type="button" data-lang="zh">中文</button>
+            <button class="lang-btn" type="button" data-lang="en">EN</button>
+        </div>
     </div>
 
     <div class="stats-row" id="stats-row"></div>
@@ -114,6 +127,38 @@
 </div>
 
 <script>
+var lang = localStorage.getItem('anpin-lang') || localStorage.getItem('pricingTableLang') || 'zh';
+if (!['zh', 'en'].includes(lang)) lang = 'zh';
+
+var i18n = {
+    zh: {
+        title: "模型广场 - AnPin AI",
+        pageTitle: "模型广场",
+        pageDesc: "查看所有可用模型及定价，价格单位为 $/M tokens",
+        totalModels: "模型总数",
+        all: "全部",
+        search: "搜索模型...",
+        input: "输入",
+        output: "输出",
+        cacheWrite: "缓存写入",
+        cacheRead: "缓存读取",
+        promptCaching: "Prompt 缓存"
+    },
+    en: {
+        title: "Model Gallery - AnPin AI",
+        pageTitle: "Model Gallery",
+        pageDesc: "View all available models and pricing. Prices are shown in $/M tokens.",
+        totalModels: "Total Models",
+        all: "All",
+        search: "Search models...",
+        input: "Input",
+        output: "Output",
+        cacheWrite: "Cache Write",
+        cacheRead: "Cache Read",
+        promptCaching: "Prompt Caching"
+    }
+};
+
 /*
  * ========================================
  *   在这里编辑模型和价格
@@ -128,6 +173,9 @@
  */
 var models = [
     // ── Anthropic ──
+    {name:"claude-fable-5", platform:"anthropic", input:10.00, output:50.00, cache_write:12.50, cache_read:1.000},
+    {name:"claude-mythos-5", platform:"anthropic", input:10.00, output:50.00, cache_write:12.50, cache_read:1.000},
+    {name:"claude-opus-4-8", platform:"anthropic", input:5.00, output:25.00, cache_write:6.25, cache_read:0.500},
     {name:"claude-haiku-4-5-20251001", platform:"anthropic", input:1.00, output:5.00, cache_write:1.25, cache_read:0.100},
     {name:"claude-opus-4-5-20251101", platform:"anthropic", input:5.00, output:25.00, cache_write:6.25, cache_read:0.500},
     {name:"claude-opus-4-6", platform:"anthropic", input:5.00, output:25.00, cache_write:6.25, cache_read:0.500},
@@ -135,8 +183,8 @@ var models = [
     {name:"claude-sonnet-4-5-20250929", platform:"anthropic", input:3.00, output:15.00, cache_write:3.75, cache_read:0.300},
     {name:"claude-sonnet-4-6", platform:"anthropic", input:3.00, output:15.00, cache_write:3.75, cache_read:0.300},
     // ── OpenAI ──
-    {name:"gpt-5.5", platform:"openai", input:5.00, output:30.00, cache_write:0.5, cache_read:1.250},
-    {name:"gpt-5.4", platform:"openai", input:2.50, output:15.00, cache_write:0.25, cache_read:0.250},
+    {name:"gpt-5.5", platform:"openai", input:5.00, output:25.00, cache_write:0, cache_read:1.250},
+    {name:"gpt-5.4", platform:"openai", input:2.50, output:15.00, cache_write:0, cache_read:0.250},
     {name:"gpt-5.4-mini", platform:"openai", input:0.750, output:4.50, cache_write:0, cache_read:0.075},
     {name:"gpt-5.2", platform:"openai", input:1.75, output:14.00, cache_write:0, cache_read:0.175},
     {name:"gpt-5.2-codex", platform:"openai", input:1.75, output:14.00, cache_write:0, cache_read:0.175},
@@ -180,8 +228,9 @@ function getPlatforms() {
 }
 
 function renderStats() {
+    var t = i18n[lang];
     var platforms = getPlatforms();
-    var html = '<div class="stat-card"><div class="stat-icon total">' + svg.grid + '</div><div><div class="stat-label">模型总数</div><div class="stat-value">' + models.length + '</div></div></div>';
+    var html = '<div class="stat-card"><div class="stat-icon total">' + svg.grid + '</div><div><div class="stat-label">' + t.totalModels + '</div><div class="stat-value">' + models.length + '</div></div></div>';
     Object.keys(platforms).forEach(function(p) {
         var cfg = platformConfig[p];
         if (cfg) {
@@ -192,8 +241,9 @@ function renderStats() {
 }
 
 function renderFilters() {
+    var t = i18n[lang];
     var platforms = getPlatforms();
-    var html = '<div class="filter-tab active" onclick="setFilter(\'all\',this)">全部 <span class="count">' + models.length + '</span></div>';
+    var html = '<div class="filter-tab active" onclick="setFilter(\'all\',this)">' + t.all + ' <span class="count">' + models.length + '</span></div>';
     Object.keys(platforms).forEach(function(p) {
         var cfg = platformConfig[p];
         if (cfg) {
@@ -205,6 +255,10 @@ function renderFilters() {
 
 function renderCard(m, i) {
     var cfg = platformConfig[m.platform] || platformConfig.openai;
+    var t = i18n[lang];
+    var cacheWriteRow = m.cache_write > 0
+        ? '<div class="price-row"><div class="price-row-left"><span class="p-icon">' + svg.cacheW + '</span> ' + t.cacheWrite + '</div><div class="price-row-right">' + priceStr(m.cache_write) + '<span class="unit">/M</span></div></div>'
+        : '';
     return '<div class="model-card" data-platform="' + m.platform + '" data-name="' + m.name + '" style="animation-delay:' + (.18 + i * .03) + 's">' +
         '<div class="card-top">' +
             '<div class="card-provider-row">' +
@@ -216,13 +270,13 @@ function renderCard(m, i) {
             '</div>' +
             '<div class="card-rate">¥1 = $1</div>' +
         '</div>' +
-        '<div class="card-feature ' + cfg.featClass + '">' + svg.zap + ' Prompt Caching</div>' +
+        '<div class="card-feature ' + cfg.featClass + '">' + svg.zap + ' ' + t.promptCaching + '</div>' +
         '<div class="price-rows">' +
-            '<div class="price-row"><div class="price-row-left"><span class="p-icon">' + svg.input + '</span> 输入</div><div class="price-row-right">' + priceStr(m.input) + '<span class="unit">/M</span></div></div>' +
-            '<div class="price-row"><div class="price-row-left"><span class="p-icon">' + svg.output + '</span> 输出</div><div class="price-row-right">' + priceStr(m.output) + '<span class="unit">/M</span></div></div>' +
+            '<div class="price-row"><div class="price-row-left"><span class="p-icon">' + svg.input + '</span> ' + t.input + '</div><div class="price-row-right">' + priceStr(m.input) + '<span class="unit">/M</span></div></div>' +
+            '<div class="price-row"><div class="price-row-left"><span class="p-icon">' + svg.output + '</span> ' + t.output + '</div><div class="price-row-right">' + priceStr(m.output) + '<span class="unit">/M</span></div></div>' +
             '<div class="price-divider"></div>' +
-            '<div class="price-row"><div class="price-row-left"><span class="p-icon">' + svg.cacheW + '</span> 缓存写入</div><div class="price-row-right">' + priceStr(m.cache_write) + '<span class="unit">/M</span></div></div>' +
-            '<div class="price-row"><div class="price-row-left"><span class="p-icon">' + svg.cacheR + '</span> 缓存读取</div><div class="price-row-right">' + priceStr(m.cache_read) + '<span class="unit">/M</span></div></div>' +
+            cacheWriteRow +
+            '<div class="price-row"><div class="price-row-left"><span class="p-icon">' + svg.cacheR + '</span> ' + t.cacheRead + '</div><div class="price-row-right">' + priceStr(m.cache_read) + '<span class="unit">/M</span></div></div>' +
         '</div>' +
     '</div>';
 }
@@ -252,7 +306,30 @@ function setFilter(f, el) {
     filterModels();
 }
 
-document.addEventListener('DOMContentLoaded', renderAll);
+function applyLanguage(nextLang) {
+    lang = nextLang;
+    localStorage.setItem('anpin-lang', lang);
+    localStorage.setItem('pricingTableLang', lang);
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    document.title = i18n[lang].title;
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        el.textContent = i18n[lang][el.dataset.i18n];
+    });
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    document.getElementById('search').placeholder = i18n[lang].search;
+    renderAll();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            applyLanguage(btn.dataset.lang);
+        });
+    });
+    applyLanguage(lang);
+});
 </script>
 </body>
 </html>
