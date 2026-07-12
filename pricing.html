@@ -122,7 +122,7 @@
                 <button class="lang-btn" data-lang-target="zh" onclick="setLang('zh')">中文</button>
                 <button class="lang-btn" data-lang-target="en" onclick="setLang('en')">English</button>
             </div>
-            <a href="https://page.anpin.ai/login" class="btn-console" target="_top"><span class="zh">控制台 &rarr;</span><span class="en">Console &rarr;</span></a>
+            <a href="https://anpin.ai/login?redirect=/logen" class="btn-console" target="_top"><span class="zh">控制台 &rarr;</span><span class="en">Console &rarr;</span></a>
         </div>
     </header>
 
@@ -225,6 +225,7 @@ function toggleLang(){setLang(lang==='zh'?'en':'zh')}
 const models=[
     {name:"claude-fable-5",platform:"anthropic",input:10.00,output:50.00,cache_write:12.50,cache_read:1.000},
     {name:"claude-mythos-5",platform:"anthropic",input:10.00,output:50.00,cache_write:12.50,cache_read:1.000},
+    {name:"claude-sonnet-5",platform:"anthropic",input:2.00,output:10.00,cache_write:2.50,cache_read:0.200},
     {name:"claude-opus-4-8",platform:"anthropic",input:5.00,output:25.00,cache_write:6.25,cache_read:0.500},
     {name:"claude-haiku-4-5-20251001",platform:"anthropic",input:1.00,output:5.00,cache_write:1.25,cache_read:0.100},
     {name:"claude-opus-4-5-20251101",platform:"anthropic",input:5.00,output:25.00,cache_write:6.25,cache_read:0.500},
@@ -232,6 +233,9 @@ const models=[
     {name:"claude-opus-4-7",platform:"anthropic",input:5.00,output:25.00,cache_write:6.25,cache_read:0.500},
     {name:"claude-sonnet-4-5-20250929",platform:"anthropic",input:3.00,output:15.00,cache_write:3.75,cache_read:0.300},
     {name:"claude-sonnet-4-6",platform:"anthropic",input:3.00,output:15.00,cache_write:3.75,cache_read:0.300},
+    {name:"gpt-5.6-sol",platform:"openai",input:5.00,output:30.00,cache_write:6.25,cache_read:0.500},
+    {name:"gpt-5.6-terra",platform:"openai",input:2.50,output:15.00,cache_write:3.125,cache_read:0.250},
+    {name:"gpt-5.6-luna",platform:"openai",input:1.00,output:6.00,cache_write:1.25,cache_read:0.100},
     {name:"gpt-5.5",platform:"openai",input:5.00,output:25.00,cache_write:0,cache_read:1.250},
     {name:"gpt-5.4",platform:"openai",input:2.50,output:15.00,cache_write:0,cache_read:0.250},
     {name:"gpt-5.4-mini",platform:"openai",input:0.750,output:4.50,cache_write:0,cache_read:0.075},
@@ -255,6 +259,7 @@ const svg = {
 
 function priceStr(v){
     if(v===0) return '$0';
+    if(v>=1 && Math.abs(v*100-Math.round(v*100))>1e-9) return '$'+v.toFixed(3);
     if(v>=1) return '$'+v.toFixed(2);
     return '$'+v.toFixed(3);
 }

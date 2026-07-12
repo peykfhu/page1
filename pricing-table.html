@@ -104,6 +104,7 @@
 var claudeModels = [
     {name:"claude-fable-5", input:10.00, output:50.00, cache_write:12.50, cache_read:1.00},
     {name:"claude-mythos-5", input:10.00, output:50.00, cache_write:12.50, cache_read:1.00},
+    {name:"claude-sonnet-5", input:2.00, output:10.00, cache_write:2.50, cache_read:0.20},
     {name:"claude-opus-4-8", input:5.00, output:25.00, cache_write:6.25, cache_read:0.50},
     {name:"claude-sonnet-4-6", input:3.00, output:15.00, cache_write:3.75, cache_read:0.30},
     {name:"claude-sonnet-4-5-20250929", input:3.00, output:15.00, cache_write:3.75, cache_read:0.30},
@@ -114,6 +115,9 @@ var claudeModels = [
 ];
 
 var gptModels = [
+    {name:"gpt-5.6-sol", input:5.00, output:30.00, cache_write:6.25, cache_read:0.50},
+    {name:"gpt-5.6-terra", input:2.50, output:15.00, cache_write:3.125, cache_read:0.25},
+    {name:"gpt-5.6-luna", input:1.00, output:6.00, cache_write:1.25, cache_read:0.10},
     {name:"gpt-5.5", input:5.00, output:25.00, cache_write:0, cache_read:1.25},
     {name:"gpt-5.4", input:2.50, output:15.00, cache_write:0, cache_read:0.25},
     {name:"gpt-5.4-mini", input:0.75, output:4.50, cache_write:0, cache_read:0.075},
@@ -142,13 +146,15 @@ var i18n = {
         cacheRead: "缓存读取",
         notesTitle: "倍率说明",
         noteRate: "倍率 = 实际成本 / 官方标准价格。例如，0.15x 表示官方价格的 15%。",
-        noteGpt: "0.15x 适用于部分 GPT 模型。",
-        noteClaude: "0.4x / 0.6x / 0.7x / 1.2x / 1.6x / 2x 为 Claude 接入通道。",
-        noteCache: "缓存写入在写入缓存时计费；缓存读取在命中缓存时计费。",
+        noteGpt: "0.15x / 0.3x 适用于部分 GPT 模型。",
+        noteClaude: "0.4x / 0.45x / 0.6x / 0.7x / 1.2x / 1.6x / 2x 为 Claude 接入通道。",
+        noteCache: "GPT-5.6+ 和 Claude 的缓存写入在写入缓存时计费；旧 GPT 模型无缓存写入价，缓存读取在命中缓存时计费。",
         noteBilling: "实际计费以平台控制台展示价格为准。",
         groups: {
-            gpt015: {name: "gpt5.5 和 gpt-image-2", desc: "部分 GPT 模型的低倍率通道"},
+            gpt015: {name: "GPT 0.15x 通道", desc: "部分 GPT 模型的低倍率通道"},
+            gpt030: {name: "GPT 0.3x 通道", desc: "部分 GPT 模型的均衡通道"},
             claude04: {name: "Claude 反代通道", desc: "经济型 Claude 接入通道"},
+            claude045: {name: "Claude 0.45x 通道", desc: "经济型 Claude 接入通道"},
             claude06: {name: "小池子", desc: "稳定 Claude 接入池"},
             claude07: {name: "Claude 低延迟通道", desc: "低延迟，高缓存命中率"},
             claude12: {name: "Claude 高级通道", desc: "高级 Claude 接入通道"},
@@ -171,13 +177,15 @@ var i18n = {
         cacheRead: "Cache Read",
         notesTitle: "Rate notes",
         noteRate: "Rate = actual cost / official standard price. For example, 0.15x means 15% of official price.",
-        noteGpt: "0.15x is for selected GPT models.",
-        noteClaude: "0.4x / 0.6x / 0.7x / 1.2x / 1.6x / 2x are Claude access channels.",
-        noteCache: "Cache Write is charged when writing cache; Cache Read is charged on cache hits.",
+        noteGpt: "0.15x / 0.3x are for selected GPT models.",
+        noteClaude: "0.4x / 0.45x / 0.6x / 0.7x / 1.2x / 1.6x / 2x are Claude access channels.",
+        noteCache: "GPT-5.6+ and Claude charge Cache Write when writing cache; older GPT models have no Cache Write price. Cache Read is charged on cache hits.",
         noteBilling: "Actual billing follows the price shown in the platform console.",
         groups: {
-            gpt015: {name: "gpt5.5 and gpt-image-2", desc: "Low-rate channel for selected GPT models"},
+            gpt015: {name: "GPT 0.15x channel", desc: "Low-rate channel for selected GPT models"},
+            gpt030: {name: "GPT 0.3x channel", desc: "Balanced channel for selected GPT models"},
             claude04: {name: "Claude reverse channel", desc: "Economy Claude access channel"},
+            claude045: {name: "Claude 0.45x channel", desc: "Economy Claude access channel"},
             claude06: {name: "Small pool", desc: "Stable Claude access pool"},
             claude07: {name: "Low-latency Claude channel", desc: "Low latency with a high cache hit rate"},
             claude12: {name: "Premium Claude channel", desc: "Premium Claude access channel"},
@@ -197,8 +205,24 @@ var groups = [
         css: "t-low"
     },
     {
+        id: "gpt030",
+        rate: 0.3,
+        scope: "gpt",
+        tag: "GPT",
+        tagCss: "tag-gpt",
+        css: "t-low"
+    },
+    {
         id: "claude04",
         rate: 0.4,
+        scope: "claude",
+        tag: "Claude",
+        tagCss: "tag-claude",
+        css: "t-low"
+    },
+    {
+        id: "claude045",
+        rate: 0.45,
         scope: "claude",
         tag: "Claude",
         tagCss: "tag-claude",
@@ -250,6 +274,7 @@ function priceStr(v) {
     if (v === 0) return '-';
     if (v < 0.01) return '$' + v.toFixed(4);
     if (v < 1) return '$' + v.toFixed(3);
+    if (Math.abs(v * 100 - Math.round(v * 100)) > 1e-9) return '$' + v.toFixed(3);
     return '$' + v.toFixed(2);
 }
 
