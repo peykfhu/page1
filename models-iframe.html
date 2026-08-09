@@ -30,6 +30,7 @@
         .stat-icon.total{background:#f0fdf4;color:#16a34a}
         .stat-icon.anthropic{background:#fff7ed;color:#ea580c}
         .stat-icon.openai{background:#f0fdf4;color:#16a34a}
+        .stat-icon.grok{background:#f8fafc;color:#111827}
         .stat-icon.google{background:#eff6ff;color:#2563eb}
         .stat-icon.deepseek{background:#f5f3ff;color:#7c3aed}
         .stat-label{font-size:.72rem;color:var(--muted);font-weight:500;margin-bottom:2px}
@@ -50,6 +51,7 @@
         .filter-tab .f-icon svg{width:10px;height:10px}
         .f-anthropic{background:#fff7ed;color:#ea580c}
         .f-openai{background:#f0fdf4;color:#16a34a}
+        .f-grok{background:#f8fafc;color:#111827}
         .f-google{background:#eff6ff;color:#2563eb}
         .f-deepseek{background:#f5f3ff;color:#7c3aed}
         .filter-tab .count{background:#f3f4f6;padding:1px 7px;border-radius:8px;font-size:.7rem;font-weight:600;color:var(--muted)}
@@ -64,6 +66,7 @@
         .provider-icon svg{width:14px;height:14px}
         .provider-icon.p-anthropic{background:#fff7ed;color:#ea580c}
         .provider-icon.p-openai{background:#f0fdf4;color:#16a34a}
+        .provider-icon.p-grok{background:#f8fafc;color:#111827}
         .provider-icon.p-google{background:#eff6ff;color:#2563eb}
         .provider-icon.p-deepseek{background:#f5f3ff;color:#7c3aed}
         .card-info{display:flex;flex-direction:column}
@@ -76,6 +79,7 @@
         .card-feature svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
         .card-feature.feat-anthropic{color:#ea580c}
         .card-feature.feat-openai{color:#16a34a}
+        .card-feature.feat-grok{color:#111827}
         .card-feature.feat-google{color:#2563eb}
         .card-feature.feat-deepseek{color:#7c3aed}
 
@@ -175,6 +179,7 @@ var models = [
     // ── Anthropic ──
     {name:"claude-fable-5", platform:"anthropic", input:10.00, output:50.00, cache_write:12.50, cache_read:1.000},
     {name:"claude-mythos-5", platform:"anthropic", input:10.00, output:50.00, cache_write:12.50, cache_read:1.000},
+    {name:"claude-opus-5", platform:"anthropic", input:5.00, output:25.00, cache_write:6.25, cache_read:0.500},
     {name:"claude-sonnet-5", platform:"anthropic", input:2.00, output:10.00, cache_write:2.50, cache_read:0.200},
     {name:"claude-opus-4-8", platform:"anthropic", input:5.00, output:25.00, cache_write:6.25, cache_read:0.500},
     {name:"claude-haiku-4-5-20251001", platform:"anthropic", input:1.00, output:5.00, cache_write:1.25, cache_read:0.100},
@@ -187,14 +192,87 @@ var models = [
     {name:"gpt-5.6-sol", platform:"openai", input:5.00, output:30.00, cache_write:6.25, cache_read:0.500},
     {name:"gpt-5.6-terra", platform:"openai", input:2.50, output:15.00, cache_write:3.125, cache_read:0.250},
     {name:"gpt-5.6-luna", platform:"openai", input:1.00, output:6.00, cache_write:1.25, cache_read:0.100},
-    {name:"gpt-5.5", platform:"openai", input:5.00, output:25.00, cache_write:0, cache_read:1.250},
+    {name:"gpt-5.5", platform:"openai", input:5.00, output:30.00, cache_write:0, cache_read:0.500},
+    {name:"gpt-5.5-pro", platform:"openai", input:30.00, output:180.00, cache_write:0, cache_read:0},
     {name:"gpt-5.4", platform:"openai", input:2.50, output:15.00, cache_write:0, cache_read:0.250},
     {name:"gpt-5.4-mini", platform:"openai", input:0.750, output:4.50, cache_write:0, cache_read:0.075},
+    {name:"gpt-5.4-nano", platform:"openai", input:0.20, output:1.25, cache_write:0, cache_read:0.020},
+    {name:"gpt-5.4-pro", platform:"openai", input:30.00, output:180.00, cache_write:0, cache_read:0},
     {name:"gpt-5.2", platform:"openai", input:1.75, output:14.00, cache_write:0, cache_read:0.175},
     {name:"gpt-5.2-codex", platform:"openai", input:1.75, output:14.00, cache_write:0, cache_read:0.175},
     {name:"gpt-5.3-codex", platform:"openai", input:1.75, output:14.00, cache_write:0, cache_read:0.175},
-    {name:"gpt-image-2", platform:"openai", input:0.1, output:0.1, cache_write:0, cache_read:2.000},
+    {name:"gpt-image-2", platform:"openai", input:8.00, output:30.00, cache_write:0, cache_read:2.000},
+    {name:"grok-4.5", platform:"grok", input:2.00, output:6.00, cache_write:0, cache_read:0.300},
+    {name:"grok-build-0.1", platform:"grok", input:1.00, output:2.00, cache_write:0, cache_read:0.200},
+    {name:"grok-4.3", platform:"grok", input:1.25, output:2.50, cache_write:0, cache_read:0.200},
+    {name:"grok-4.20-multi-agent-0309", platform:"grok", input:1.25, output:2.50, cache_write:0, cache_read:0.200},
+    {name:"grok-4.20-0309-reasoning", platform:"grok", input:1.25, output:2.50, cache_write:0, cache_read:0.200},
+    {name:"grok-4.20-0309-non-reasoning", platform:"grok", input:1.25, output:2.50, cache_write:0, cache_read:0.200},
 ];
+
+function escapeHtml(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[ch];
+    });
+}
+
+function toPrice(value) {
+    var num = Number(value);
+    return Number.isFinite(num) && num > 0 ? num : 0;
+}
+
+function normalizePricingModel(model) {
+    if (!model || !model.name || !model.platform) return null;
+    var platform = String(model.platform).toLowerCase();
+    if (platform !== 'anthropic' && platform !== 'openai' && platform !== 'grok') return null;
+    return {
+        name: String(model.name),
+        platform: platform,
+        input: toPrice(model.input),
+        output: toPrice(model.output),
+        cache_write: toPrice(model.cache_write),
+        cache_read: toPrice(model.cache_read)
+    };
+}
+
+function applyPricingFeed(feed) {
+    if (!feed || !Array.isArray(feed.models)) return false;
+    var nextModels = feed.models.map(normalizePricingModel).filter(Boolean);
+    if (!nextModels.length) return false;
+    models = nextModels;
+    renderAll();
+    return true;
+}
+
+function pricingFeedUrl() {
+    if (window.ANPIN_PRICING_FEED_URL) return window.ANPIN_PRICING_FEED_URL;
+    var meta = document.querySelector('meta[name="anpin-pricing-feed"]');
+    if (meta && meta.content) return meta.content;
+    return new URL('pricing-feed.json', window.location.href).toString();
+}
+
+function dynamicPricingEnabled() {
+    if (window.ANPIN_ENABLE_DYNAMIC_PRICING === false) return false;
+    if (window.ANPIN_ENABLE_DYNAMIC_PRICING === true) return true;
+    var meta = document.querySelector('meta[name="anpin-dynamic-pricing"]');
+    if (meta) return meta.content !== 'false';
+    return true;
+}
+
+async function loadPricingFeed() {
+    if (!window.fetch) return;
+    try {
+        var res = await fetch(pricingFeedUrl(), {cache: 'no-store', credentials: 'same-origin'});
+        if (!res.ok) throw new Error('pricing feed failed');
+        applyPricingFeed(await res.json());
+    } catch (e) {}
+}
 
 var svg = {
     anthropic:'<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M15.17 2.5h3.41L23 21.5h-3.63l-1.1-3.6h-5.36L11.81 21.5H8.18l6.99-19zm1.58 5.22l-1.93 5.96h3.82l-1.89-5.96z"/><path d="M5.99 2.5h3.42L3.78 21.5H.35L5.99 2.5z"/></svg>',
@@ -210,6 +288,7 @@ var svg = {
 var platformConfig = {
     anthropic: {icon:svg.anthropic, label:"ANTHROPIC", cssClass:"anthropic", fClass:"f-anthropic", pClass:"p-anthropic", featClass:"feat-anthropic"},
     openai:    {icon:svg.openai,    label:"OPENAI",    cssClass:"openai",    fClass:"f-openai",    pClass:"p-openai",    featClass:"feat-openai"},
+    grok:      {icon:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4.2l4.1 5.4L16.7 4H21l-6.6 8.1L21 20h-4.2l-4.4-5.7L7.8 20H3.5l6.8-8.4L4 4z"/></svg>', label:"GROK", cssClass:"grok", fClass:"f-grok", pClass:"p-grok", featClass:"feat-grok"},
     google:    {icon:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.19-1.79 4.13-1.15 1.15-2.94 2.41-6.05 2.41-4.83 0-8.6-3.89-8.6-8.72s3.77-8.72 8.6-8.72c2.6 0 4.51 1.02 5.91 2.36l2.32-2.32C18.36 1.19 15.73 0 12.48 0 5.73 0 .19 5.37.19 12s5.54 12 12.29 12c3.6 0 6.32-1.19 8.45-3.42 2.18-2.18 2.87-5.25 2.87-7.72 0-.77-.07-1.48-.19-2.07h-11.13z"/></svg>', label:"GOOGLE", cssClass:"google", fClass:"f-google", pClass:"p-google", featClass:"feat-google"},
     deepseek:  {icon:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>', label:"DEEPSEEK", cssClass:"deepseek", fClass:"f-deepseek", pClass:"p-deepseek", featClass:"feat-deepseek"},
 };
@@ -261,15 +340,16 @@ function renderFilters() {
 function renderCard(m, i) {
     var cfg = platformConfig[m.platform] || platformConfig.openai;
     var t = i18n[lang];
+    var modelName = escapeHtml(m.name);
     var cacheWriteRow = m.cache_write > 0
         ? '<div class="price-row"><div class="price-row-left"><span class="p-icon">' + svg.cacheW + '</span> ' + t.cacheWrite + '</div><div class="price-row-right">' + priceStr(m.cache_write) + '<span class="unit">/M</span></div></div>'
         : '';
-    return '<div class="model-card" data-platform="' + m.platform + '" data-name="' + m.name + '" style="animation-delay:' + (.18 + i * .03) + 's">' +
+    return '<div class="model-card" data-platform="' + escapeHtml(m.platform) + '" data-name="' + modelName + '" style="animation-delay:' + (.18 + i * .03) + 's">' +
         '<div class="card-top">' +
             '<div class="card-provider-row">' +
                 '<div class="provider-icon ' + cfg.pClass + '">' + cfg.icon + '</div>' +
                 '<div class="card-info">' +
-                    '<div class="card-model-name">' + m.name + '</div>' +
+                    '<div class="card-model-name">' + modelName + '</div>' +
                     '<div class="card-provider-name">' + cfg.label + '</div>' +
                 '</div>' +
             '</div>' +
@@ -297,7 +377,7 @@ function filterModels() {
     var q = document.getElementById('search').value.toLowerCase();
     document.querySelectorAll('.model-card').forEach(function(c) {
         var p = c.dataset.platform;
-        var n = c.dataset.name;
+        var n = (c.dataset.name || '').toLowerCase();
         var matchP = currentFilter === 'all' || p === currentFilter;
         var matchQ = !q || n.includes(q);
         c.style.display = matchP && matchQ ? '' : 'none';
@@ -334,6 +414,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     applyLanguage(lang);
+    if (dynamicPricingEnabled()) loadPricingFeed();
 });
 </script>
 </body>
